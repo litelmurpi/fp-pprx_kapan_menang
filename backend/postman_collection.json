@@ -1,0 +1,1318 @@
+{
+	"info": {
+		"_postman_id": "c62ad037-1234-4567-89ab-cd0123456789",
+		"name": "Platform Kolaborasi Tim Kampus - API",
+		"description": "Postman Collection untuk menguji seluruh endpoint API Platform Kolaborasi Tim Kampus.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Mahasiswa",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Fajar Ramadhan\",\n    \"email\": \"fajar@students.amikom.ac.id\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\",\n    \"nim\": \"22.11.9999\",\n    \"prodi\": \"Informatika\",\n    \"minat_bidang\": \"Backend\",\n    \"jam_luang_per_minggu\": 16\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.access_token) {",
+									"    pm.collectionVariables.set(\"token\", jsonData.access_token);",
+									"}"
+								],
+								"type": "javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"budi@students.amikom.ac.id\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User (Me)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Student Profile (Mahasiswa)",
+			"item": [
+				{
+					"name": "Get Profile Info",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mahasiswa/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mahasiswa",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile Info",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Budi Santoso Nugroho\",\n    \"nim\": \"22.11.4321\",\n    \"prodi\": \"Informatika\",\n    \"minat_bidang\": \"Backend\",\n    \"jam_luang_per_minggu\": 16\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/mahasiswa/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mahasiswa",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Skills List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mahasiswa/skills",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mahasiswa",
+								"skills"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add or Update Skill",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"skill_id\": 8,\n    \"level_keahlian\": 5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/mahasiswa/skills",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mahasiswa",
+								"skills"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Skill",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mahasiswa/skills/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mahasiswa",
+								"skills",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Master Skills List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/skills/master",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skills",
+								"master"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Project Management (Proyek)",
+			"item": [
+				{
+					"name": "Get Project Categories",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/proyek/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Project",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"judul\": \"Aplikasi E-Commerce UMKM Kopi\",\n    \"deskripsi\": \"Membangun platform pemesanan kopi online untuk UMKM Mitra.\",\n    \"tanggal_mulai\": \"2026-07-01\",\n    \"tanggal_selesai\": \"2026-08-31\",\n    \"kategori_proyek_id\": 4,\n    \"label_simulasi\": true,\n    \"skills\": [\n        {\n            \"skill_id\": 8,\n            \"jumlah_dibutuhkan\": 1\n        },\n        {\n            \"skill_id\": 4,\n            \"jumlah_dibutuhkan\": 1\n        },\n        {\n            \"skill_id\": 14,\n            \"jumlah_dibutuhkan\": 1\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/proyek",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Projects",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/proyek?status=open",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "open"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Project Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/proyek/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Project",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"judul\": \"Aplikasi E-Commerce UMKM Kopi Terbaru\",\n    \"deskripsi\": \"Membangun platform pemesanan kopi online dengan payment gateway.\",\n    \"status\": \"in_progress\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/proyek/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Project",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/proyek/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PIC Approval (UMKM)",
+			"item": [
+				{
+					"name": "Get Waiting Approval Projects (PIC)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/proyek/waiting-approval",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"waiting-approval"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PIC Decide Approval (Approve/Reject)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"approved\",\n    \"catatan_alasan\": \"Skenario proyek sudah sesuai standar kurikulum UKM.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/proyek/1/decide-approval",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1",
+								"decide-approval"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Matchmaking & Teams",
+			"item": [
+				{
+					"name": "Get Matching Candidates List (Weighted Ranking)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/proyek/1/candidates",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1",
+								"candidates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Join Project Team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"peran\": \"Frontend Developer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/proyek/1/join",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Member to Team (Invite)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mahasiswa_id\": 2,\n    \"peran\": \"UI/UX Designer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/proyek/1/members",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1",
+								"members"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Member from Team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/proyek/1/members/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1",
+								"members",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Checkpoints (Milestones)",
+			"item": [
+				{
+					"name": "List Project Checkpoints",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/proyek/1/checkpoints",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1",
+								"checkpoints"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Project Checkpoint",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"judul_milestone\": \"Sprint 1: Desain & Database Setup\",\n    \"deadline\": \"2026-07-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/proyek/1/checkpoints",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1",
+								"checkpoints"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Checkpoint Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/checkpoints/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"checkpoints",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Checkpoint Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"judul_milestone\": \"Sprint 1: Desain & Migrasi DB (Revised)\",\n    \"status\": \"completed\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/checkpoints/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"checkpoints",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Checkpoint",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/checkpoints/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"checkpoints",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Progress to Checkpoint",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"catatan_progres\": \"Database schema migrated and connected. Admin interface design completed in Figma.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/checkpoints/1/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"checkpoints",
+								"1",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Checkpoint Submissions list",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/checkpoints/1/submissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"checkpoints",
+								"1",
+								"submissions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Peer Evaluation & Portfolio",
+			"item": [
+				{
+					"name": "Get Peer Evaluations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/proyek/1/evaluasi",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1",
+								"evaluasi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Peer Evaluation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"penerima_anggota_id\": 2,\n    \"skor_kontribusi\": 5,\n    \"komentar\": \"Andi berkontribusi penuh pada pembuatan layout dan prototype figma tepat waktu.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/proyek/1/evaluasi",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"proyek",
+								"1",
+								"evaluasi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Verified Portfolio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/portfolio",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"portfolio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Flagged Reports (Dosen)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/reports/flagged",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reports",
+								"flagged"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PIC Validate Flagged Report",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status_validasi\": \"final\",\n    \"catatan\": \"Penilaian dikonfirmasi valid oleh dosen setelah interview tatap muka.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reports/1/validate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reports",
+								"1",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
