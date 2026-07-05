@@ -4,38 +4,40 @@
 :root {
   font-family: 'Inter', -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
   
-  /* Verstack Ultra-Modern Blue/Monochrome Palette (Dark Mode) */
-  --color-canvas: #0D0D0D;
-  --color-surface: #111418;
-  --color-elevated: #151A21;
-  --color-border: rgba(179, 187, 253, 0.18);
-  --color-border-hover: rgba(179, 187, 253, 0.40);
-  --color-border-subtle: rgba(179, 187, 253, 0.08);
+  /* Verstack Monochrome Foundation (Dark Mode) — per DESIGN.md v2.0 */
+  --color-canvas: #0A0A0A;
+  --color-surface: #111111;
+  --color-elevated: #161616;
+  --color-border: #262626;
+  --color-border-hover: #CCFD15;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
   --color-border-highlight: rgba(204, 253, 21, 0.45);
+  --color-bg-hover: rgba(204, 253, 21, 0.08);
+  --color-bg-active: rgba(204, 253, 21, 0.15);
   
-  --color-text-primary: #FAFAFA;
-  --color-text-secondary: #B3BBFD;
-  --color-text-tertiary: #64748B;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #8B8B8B;
+  --color-text-tertiary: #525252;
   --color-text-accent: #CCFD15;
   
-  /* Dual-Accent Palette: Lime (#CCFD15) & Periwinkle (#B3BBFD) */
+  /* Monochrome + Lime Palette */
   --color-primary: #CCFD15;
   --color-primary-hover: #BADC0E;
   --color-primary-foreground: #111111;
   
-  --color-secondary: #B3BBFD;
-  --color-secondary-hover: #9DA7FA;
-  --color-secondary-foreground: #111111;
+  --color-secondary: #FAFAFA;
+  --color-secondary-hover: #E5E5E5;
+  --color-secondary-foreground: #0A0A0A;
   
   --color-accent: #CCFD15;
   --color-accent-soft: rgba(204, 253, 21, 0.12);
   --color-accent-border: rgba(204, 253, 21, 0.35);
   --color-accent-text: #CCFD15;
   
-  --color-info: #B3BBFD;
-  --color-info-soft: rgba(179, 187, 253, 0.14);
-  --color-info-border: rgba(179, 187, 253, 0.30);
-  --color-info-text: #B3BBFD;
+  --color-info: #FAFAFA;
+  --color-info-soft: rgba(255, 255, 255, 0.10);
+  --color-info-border: rgba(255, 255, 255, 0.20);
+  --color-info-text: #FAFAFA;
 
   /* Backward-compatible mappings during refactor */
   --color-brand: #CCFD15;
@@ -49,46 +51,48 @@
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-danger: #EF4444;
-  --color-cyan: #B3BBFD;
+  --color-cyan: #FAFAFA;
   
   --bg-grid: 
-    linear-gradient(to right, rgba(179, 187, 253, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(179, 187, 253, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
 [data-theme="light"], .light {
-  /* Verstack Ultra-Modern Monochrome Palette (Light Mode) */
+  /* Verstack Clean Productivity Authority (Light Mode) — per DESIGN.md v2.0 */
   --color-canvas: #FAFAFA;
   --color-surface: #FFFFFF;
   --color-elevated: #FFFFFF;
-  --color-border: rgba(30, 41, 59, 0.18);
-  --color-border-hover: rgba(71, 85, 105, 0.40);
-  --color-border-subtle: rgba(30, 41, 59, 0.08);
-  --color-border-highlight: rgba(110, 140, 6, 0.45);
+  --color-border: #E2E8F0;
+  --color-border-hover: #8C99E0;
+  --color-border-subtle: rgba(0, 0, 0, 0.06);
+  --color-border-highlight: rgba(179, 187, 253, 0.60);
+  --color-bg-hover: rgba(179, 187, 253, 0.12);
+  --color-bg-active: rgba(179, 187, 253, 0.22);
   
-  --color-text-primary: #0D0D0D;
-  --color-text-secondary: #334155;
+  --color-text-primary: #0A0A0A;
+  --color-text-secondary: #475569;
   --color-text-tertiary: #64748B;
-  --color-text-accent: #5A7305;
+  --color-text-accent: #0A0A0A;
   
-  /* Dual-Accent Palette (Light Mode - WCAG AA High Contrast) */
+  /* Monochrome + Lime Palette (Light Mode) */
   --color-primary: #CCFD15;
   --color-primary-hover: #BADC0E;
   --color-primary-foreground: #111111;
   
-  --color-secondary: #4F46E5;
-  --color-secondary-hover: #4338CA;
-  --color-secondary-foreground: #FFFFFF;
+  --color-secondary: #0A0A0A;
+  --color-secondary-hover: #262626;
+  --color-secondary-foreground: #FAFAFA;
   
   --color-accent: #CCFD15;
   --color-accent-soft: rgba(204, 253, 21, 0.20);
   --color-accent-border: rgba(110, 140, 6, 0.35);
-  --color-accent-text: #5A7305;
+  --color-accent-text: #0A0A0A;
   
-  --color-info: #4F46E5;
-  --color-info-soft: rgba(79, 70, 229, 0.10);
-  --color-info-border: rgba(79, 70, 229, 0.25);
-  --color-info-text: #4F46E5;
+  --color-info: #0A0A0A;
+  --color-info-soft: rgba(0, 0, 0, 0.06);
+  --color-info-border: rgba(0, 0, 0, 0.20);
+  --color-info-text: #0A0A0A;
 
   /* Backward-compatible mappings */
   --color-brand: #CCFD15;
@@ -102,11 +106,11 @@
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-danger: #EF4444;
-  --color-cyan: #4F46E5;
+  --color-cyan: #0A0A0A;
   
   --bg-grid: 
-    linear-gradient(to right, rgba(30, 41, 59, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 41, 59, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
 }
 
 body {
@@ -135,7 +139,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, transparent 30%, rgba(13, 13, 13, 0.85) 100%);
+  background: radial-gradient(circle at center, transparent 30%, rgba(10, 10, 10, 0.85) 100%);
   pointer-events: none;
   z-index: 1;
 }

@@ -51,7 +51,7 @@ Sistem warna dibangun di atas dua fondasi tema (Dark & Light Mode) yang dapat di
 | Nama Aksen | Hex Code | Latar Badge | Border Badge | Penggunaan |
 | :--- | :--- | :--- | :--- | :--- |
 | **Primary Accent (Vibrant Lime)** | `#CCFD15` | `rgba(204, 253, 21, 0.15)` | `rgba(204, 253, 21, 0.35)` | CTA utama (`.btn-primary`), sorotan kata penting, indikator aktif, success highlights |
-| **Secondary Accent (Periwinkle)** | `#B3BBFD` | `rgba(179, 187, 253, 0.15)` | `rgba(179, 187, 253, 0.35)` | Tombol sekunder (`.btn-secondary`), hover states, links, info badges |
+| **Secondary Accent (Monochrome)** | `#FAFAFA` | `rgba(255, 255, 255, 0.10)` | `rgba(255, 255, 255, 0.20)` | Tombol sekunder (`.btn-secondary`), hover states, links, info badges |
 | **Amber Warning (Alert)** | `#F59E0B` | `rgba(245, 158, 11, 0.10)` | `rgba(245, 158, 11, 0.25)` | *Variance Check Alert*, batas ambang partisipasi, partial skill fit |
 | **Crimson Flag (Danger)** | `#EF4444` | `rgba(239, 68, 68, 0.10)` | `rgba(239, 68, 68, 0.25)` | Deteksi *Free-Rider* (<10% kontribusi), tugas terlambat |
 
@@ -86,7 +86,7 @@ Sistem tipografi dirancang agar bersih, sangat mudah dibaca pada layar beresolus
 Kartu pada tema Linear tidak menggunakan bayangan hitam pekat yang kasar, melainkan menggabungkan pembatas tipis 1px, latar belakang transparan, dan *ambient shadow* yang sangat halus.
 - **Base Card Style**:
   ```html
-  <div class="bg-[#141519]/80 backdrop-blur-md border border-white/10 rounded-[16px] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-all duration-200 hover:border-white/20 hover:bg-[#141519]">
+  <div class="theme-card p-6">
     <!-- Content -->
   </div>
   ```
@@ -102,7 +102,7 @@ Tombol dirancang presisi dengan gradien halus dan efek *glow* di bagian bawah sa
      <svg class="w-4 h-4" /> <!-- Icon -->
    </button>
    ```
-2. **Secondary Periwinkle Outline Button**:
+2. **Secondary Outline Button (Monochrome)**:
    ```html
    <button class="btn-secondary font-medium text-xs px-4 py-2.5 rounded-lg inline-flex items-center gap-2 cursor-pointer">
      <span>Lihat Ruang Kerja</span>
@@ -117,23 +117,25 @@ Tombol dirancang presisi dengan gradien halus dan efek *glow* di bagian bawah sa
 
 ### C. Badges, Tags & Status Pills
 Pill badge bergaya Linear memiliki bentuk kapsul sempurna (`rounded-full`), border 1px transparan, dan ikon atau titik indikator menyala (*glowing dot*).
-- **AI Match Badge (Violet)**:
-  `bg-[#5E6AD2]/10 text-[#8B96E9] border border-[#5E6AD2]/25 px-3 py-1 rounded-full text-[11px] font-semibold inline-flex items-center gap-1.5`
-- **Verified SHA-256 Badge (Emerald)**:
-  `bg-[#10B981]/10 text-[#34D399] border border-[#10B981]/25 px-3 py-1 rounded-full text-[11px] font-semibold inline-flex items-center gap-1.5`
-- **Free-Rider Flagged Badge (Crimson)**:
+- **Primary Accent Badge (Lime):**
+  `badge-primary px-3 py-1 rounded-full text-[11px] font-semibold inline-flex items-center gap-1.5`
+- **Secondary Accent Badge (Monochrome):**
+  `badge-secondary px-3 py-1 rounded-full text-[11px] font-semibold inline-flex items-center gap-1.5`
+- **Info Badge (Monochrome Soft):**
+  `badge-info px-3 py-1 rounded-full text-[11px] font-semibold inline-flex items-center gap-1.5`
+- **Free-Rider Flagged Badge (Crimson):**
   `bg-[#EF4444]/15 text-[#F87171] border border-[#EF4444]/30 px-3 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5 animate-pulse`
-- **SDG 8 UMKM Partner Badge (Sky Cyan)**:
-  `bg-[#38BDF8]/10 text-[#7DD3FC] border border-[#38BDF8]/25 px-3 py-1 rounded-full text-[11px] font-semibold inline-flex items-center gap-1.5`
+- **Warning Badge (Amber):**
+  `bg-amber-500/10 text-amber-500 border border-amber-500/30 px-3 py-1 rounded-full text-[11px] font-semibold inline-flex items-center gap-1.5`
 
 ### D. Form Inputs, Selectors & Search Bar
 - **Search Bar dengan Shortcut Badge**:
   Mengandung ikon pencarian di kiri dan indikator *shortcut keyboard* di kanan (misal: `⌘K` atau `/`).
   ```html
   <div class="relative w-full">
-    <svg class="w-4 h-4 text-[#8A8F98] absolute left-3.5 top-3.5" />
-    <input type="text" placeholder="Cari proyek atau keahlian..." class="w-full bg-[#0D0E11] text-[#F7F8F8] placeholder-[#5A5F6B] text-xs font-medium pl-10 pr-12 py-3 rounded-lg border border-white/10 focus:border-[#5E6AD2] focus:ring-2 focus:ring-[#5E6AD2]/20 focus:outline-none transition-all" />
-    <kbd class="absolute right-3.5 top-3 bg-white/5 border border-white/10 rounded px-1.5 py-0.5 font-mono text-[10px] text-[#8A8F98]">⌘K</kbd>
+    <svg class="w-4 h-4 theme-text-muted absolute left-3.5 top-3.5" />
+    <input type="text" placeholder="Cari proyek atau keahlian..." class="w-full bg-white/5 theme-text placeholder:theme-text-muted text-xs font-medium pl-10 pr-12 py-3 rounded-lg border theme-border focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:outline-none transition-all" />
+    <kbd class="absolute right-3.5 top-3 bg-white/5 border theme-border rounded px-1.5 py-0.5 font-mono-tech text-[10px] theme-text-muted">⌘K</kbd>
   </div>
   ```
 
@@ -142,27 +144,27 @@ Pill badge bergaya Linear memiliki bentuk kapsul sempurna (`rounded-full`), bord
 ## 5. Pedoman Khusus Fitur Utama Verstack
 
 ### A. Matchmaking & Pencarian Proyek
-- **Visualisasi Kompatibilitas Skill**: Skor pencocokan skill tidak ditampilkan seadanya, melainkan dalam bentuk *metric bar* atau *pill badge* yang bersinar (`94% Match` menggunakan warna Emerald Green `#10B981`, sedangkan `Partial Fit` menggunakan warna Amber `#F59E0B`).
-- **Komitmen Waktu**: Ditampilkan dengan ikon jam bergaya simpel dan teks monospace (misal: `12 jam/mgg`) berwarna `#8A8F98`.
+- **Visualisasi Kompatibilitas Skill**: Skor pencocokan skill tidak ditampilkan seadanya, melainkan dalam bentuk *metric bar* atau *pill badge* yang bersinar (`94% Match` menggunakan warna **Primary Lime** `badge-primary` / `#CCFD15`, sedangkan `Partial Fit` menggunakan warna **Amber** `bg-amber-500/10 text-amber-500`).
+- **Komitmen Waktu**: Ditampilkan dengan ikon jam bergaya simpel dan teks monospace (misal: `12 jam/mgg`) menggunakan kelas `theme-text-muted`.
 
 ### B. Audit Trail Checkpoint & Ruang Kerja (Workspace)
 - **Daftar Checkpoint Mingguan**: Mengadopsi tampilan *Linear Issue Tracker*.
-  - Setiap baris checkpoint memiliki pembatas bawah tipis (`border-b border-white/5`).
+  - Setiap baris checkpoint memiliki pembatas bawah tipis (`border-b theme-border`).
   - Bagian sebelah kiri berisi nomor minggu dan deadline dalam format monospace.
   - Bagian kanan berisi status (*Selesai / Dalam Pengerjaan / Terlambat*) dan tombol CTA **Laporkan Progres** yang simpel namun kontras.
 - **Panel Deteksi Free-Rider (Sistem Peringatan Dini)**:
   - Anggota tim yang berkontribusi normal ditampilkan dengan indikator hijau (`★ Aktif - 35%`).
-  - Anggota dengan kontribusi <10% dari rata-rata tim secara otomatis diberi batas merah transparan (`border-[#EF4444]/40 bg-[#EF4444]/10`), teks merah `#F87171`, dan tanda peringatan `⚠ Flagged (Free-Rider)`. Hal ini memberikan efek psikologis akuntabilitas yang sangat kuat.
+  - Anggota dengan kontribusi <10% dari rata-rata tim secara otomatis diberi peringatan. Hal ini memberikan efek psikologis akuntabilitas yang sangat kuat. Menggunakan kelas: `bg-[#EF4444]/15 border border-[#EF4444]/30 text-[#F87171]`.
 
 ### C. Portofolio & Kredensial Kriptografis (SHA-256 Pass)
 - **Konsep Digital Pass**: Kartu portofolio dibentuk seperti *Linear Digital Credential Pass* atau *Apple Wallet Card*.
 - **Kotak Display SHA-256 Hash**:
-  - Menggunakan latar belakang sangat gelap (`bg-[#08090A]`) dengan border `#374151` dan sudut melengkung (`rounded-xl`).
-  - Teks string hash ditampilkan dalam font `JetBrains Mono` berwarna `#34D399` (hijau terminal modern) atau putih abu-abu dengan tombol salin (Copy Button) di sisi kanan yang merespons dengan centang hijau saat diklik.
+  - Menggunakan latar belakang sesuai token elevasi tinggi (`var(--color-elevated)`) dengan border tipis dan sudut melengkung (`rounded-xl`).
+  - Teks string hash ditampilkan dalam font `JetBrains Mono` berwarna `#CCFD15` (Lime terminal modern) atau putih abu-abu dengan tombol salin (Copy Button) di sisi kanan yang merespons dengan centang saat diklik.
 - **QR Code Verification**: Ditempatkan di sudut kanan atas kartu dalam container putih bersudut melengkung halus untuk kontras pemindaian maksimal.
 
 ### D. Kemitraan SDG 8 UMKM Lokal
-- Proyek UMKM ditampilkan dalam grid kartu dengan aksen biru langit / cyan (`#38BDF8`).
+- Proyek UMKM ditampilkan dalam grid kartu dengan aksen desain sekunder (Periwinkle `#B3BBFD`).
 - **Pernyataan Simulasi Akademik**: Wajib mencantumkan penanda kurasi yang elegan agar pengguna memahami bahwa proyek tersebut adalah wadah praktik lapangan:
   `bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-medium px-3 py-1.5 rounded-lg inline-block mb-4`
   *"⚠ Simulasi — Proyek kurasi akademik percontohan"*
@@ -173,31 +175,30 @@ Pill badge bergaya Linear memiliki bentuk kapsul sempurna (`rounded-full`), bord
 
 ### A. Navigation Bar with Theme Switcher (Sticky Blur Header)
 ```html
-<header class="sticky top-0 z-50 bg-[#08090A]/80 backdrop-blur-md border-b border-white/10 transition-all">
+<header class="sticky top-0 z-50 bg-[var(--color-canvas)]/80 backdrop-blur-md border-b theme-border transition-all">
   <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
     <!-- Logo & Title -->
     <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#6872D9] to-[#5E6AD2] flex items-center justify-center shadow-[0_0_15px_rgba(94,106,210,0.4)]">
+      <div class="w-8 h-8 rounded-lg primary-bg flex items-center justify-center shadow-[0_0_15px_var(--color-brand-glow)]">
         <!-- Logo Icon -->
       </div>
-      <span class="font-heading-3 text-sm font-bold text-[#F7F8F8] tracking-tight">Verstack</span>
+      <span class="font-heading text-sm font-bold theme-text tracking-tight">Verstack</span>
     </div>
     
     <!-- Navigation Links -->
     <nav class="hidden md:flex items-center gap-1">
-      <button class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-[#F7F8F8] bg-white/10 border border-white/10 shadow-xs">Beranda</button>
-      <button class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-[#8A8F98] hover:text-[#F7F8F8] hover:bg-white/5 transition-all">Cari Tim</button>
-      <button class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-[#8A8F98] hover:text-[#F7F8F8] hover:bg-white/5 transition-all">Checkpoint</button>
+      <button class="px-3.5 py-1.5 rounded-lg text-xs font-medium theme-text bg-[var(--color-bg-active)] border theme-border shadow-xs">Beranda</button>
+      <button class="px-3.5 py-1.5 rounded-lg text-xs font-medium theme-text-muted hover:theme-text hover:bg-white/5 transition-all">Cari Tim</button>
+      <button class="px-3.5 py-1.5 rounded-lg text-xs font-medium theme-text-muted hover:theme-text hover:bg-white/5 transition-all">Checkpoint</button>
     </nav>
     
     <!-- Action Button & Theme Switcher -->
     <div class="flex items-center gap-2">
       <!-- Theme Switch Toggle Button -->
-      <button aria-label="Toggle Theme" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-[#8A8F98] hover:text-[#F7F8F8] border border-white/10 transition-all cursor-pointer flex items-center justify-center">
-        <!-- Sun Icon for Light Mode / Moon Icon for Dark Mode -->
-        <svg class="w-4 h-4 text-current" />
+      <button aria-label="Toggle Theme" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 theme-text-muted hover:theme-text border theme-border transition-all cursor-pointer flex items-center justify-center">
+        <svg class="w-4 h-4 text-current" /> <!-- Sun/Moon Icon -->
       </button>
-      <button class="bg-[#5E6AD2] hover:bg-[#6872D9] text-white text-xs font-medium px-4 py-2 rounded-lg shadow-sm border border-white/10">Mulai Sekarang</button>
+      <button class="btn-primary text-xs font-medium px-4 py-2 rounded-lg">Mulai Sekarang</button>
     </div>
   </div>
 </header>
@@ -205,10 +206,11 @@ Pill badge bergaya Linear memiliki bentuk kapsul sempurna (`rounded-full`), bord
 
 ### B. Hero Section (Linear Spotlight Layout)
 - **Headline**: Menggunakan efek teks gradien kontras tinggi:
-  `class="font-display text-4xl sm:text-6xl font-bold bg-gradient-to-r from-white via-white to-[#8A8F98] bg-clip-text text-transparent leading-[1.08] tracking-tight"`
+  `class="font-display text-4xl sm:text-6xl font-bold leading-[1.08] tracking-tight theme-text"`
+  dengan aksen kata penting: `class="primary-text font-extrabold"`
 - **Ambient Light Glow**: Di belakang hero, letakkan elemen dekoratif berupa cahaya pendar radial:
   ```html
-  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-[#5E6AD2]/20 to-[#10B981]/15 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] bg-[var(--color-brand)]/15 blur-[140px] rounded-full pointer-events-none -z-10 animate-pulse-glow"></div>
   ```
 - **Product Mockup Showcase**: Tampilkan card interaktif yang melambangkan aktivitas real-time di dalam aplikasi (contoh: log konfirmasi pull request github, pembaruan status checkpoint tim, dan verifikasi skor AI).
 
@@ -218,19 +220,19 @@ Pill badge bergaya Linear memiliki bentuk kapsul sempurna (`rounded-full`), bord
 
 1. **Hover Lift**: Setiap elemen interaktif (kartu proyek, tombol) wajib menggunakan transisi `transform` dan `box-shadow`:
    `transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.6)]`
-2. **Smooth Focus States**: Saat input form difokuskan, garis batas harus bertransisi secara halus ke warna violet Linear `#5E6AD2` dengan pendaran ring tipis di sekelilingnya tanpa menggeser tata letak elemen lain.
+2. **Smooth Focus States**: Saat input form difokuskan, garis batas harus bertransisi secara halus ke warna `var(--color-primary)` dengan pendaran ring tipis di sekelilingnya tanpa menggeser tata letak elemen lain.
 3. **Skeleton Loading / Pulse**: Gunakan animasi pendaran kelabu gelap (`animate-pulse bg-white/5 rounded-lg`) untuk memuat data sebelum ditampilkan dari API Laravel backend.
 
 ---
 
 ## 8. Ringkasan Checklist Implementasi Developer
 
-- [x] Mendukung perpindahan dua tema (Dual Theme System: **Obsidian Dark Mode** `#08090A` dan **Crisp Linear Light Mode** `#FFFFFF`) secara dinamis menggunakan Theme Switcher di Navbar.
-- [x] Latar belakang utama menggunakan `#08090A` untuk Dark Mode dan `#FFFFFF` untuk Light Mode dengan penyesuaian kontras otomatis pada teks dan surface card.
-- [x] Seluruh border pembatas menggunakan garis tipis dengan opasitas rendah (`border-white/10` untuk gelap dan `#E5E7EB` untuk terang).
-- [x] Mengurangi ketergantungan pada ikon warna-warni yang tidak perlu; gunakan ikon berskala monokromatik dengan aksen warna hanya untuk indikator status vital (Sukses, Peringatan, Bahaya, Info).
+- [x] Mendukung perpindahan dua tema (Dual Theme System: **Deep Obsidian Dark Mode** `#0A0A0A` dan **Clean Light Mode** `#FAFAFA`) secara dinamis menggunakan Theme Switcher di Navbar.
+- [x] Latar belakang utama menggunakan `#0A0A0A` untuk Dark Mode dan `#FAFAFA` untuk Light Mode dengan penyesuaian kontras otomatis pada teks dan surface card.
+- [x] Seluruh border pembatas menggunakan garis tipis monokrom (`#262626` untuk gelap dan `#E2E8F0` untuk terang).
+- [x] Monochrome + Lime System: **Primary** `#CCFD15` (Vibrant Lime) untuk CTA dan aksi utama, **Secondary** (Monochrome) untuk elemen sekunder dan info.
 - [x] Penggunaan font sans-serif modern (**Space Grotesk** / **Inter**) untuk UI dan **JetBrains Mono** untuk string kriptografis SHA-256 dan log audit.
-- [x] Efek *laser glow* dan *radial backdrop illumination* diterapkan dengan bijak dan performatif (menggunakan CSS blur dan opacity tanpa membebani rendering DOM).
+- [x] Efek *lime glow* dan *radial backdrop illumination* diterapkan dengan bijak dan performatif (menggunakan CSS blur dan opacity tanpa membebani rendering DOM).
 
 ---
 *Pedoman sistem desain visual ini menjadi acuan mutlak bagi seluruh tim pengembang frontend (React/Vite/Tailwind) dan backend (Laravel API) untuk menjamin antarmuka Verstack berada pada standar estetika software developer modern tertinggi.*

@@ -184,7 +184,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab }) => {
       {/* Create Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="theme-card bg-[#141519] dark:bg-[#141519] rounded-[20px] max-w-lg w-full p-6 relative shadow-2xl border-t-2 primary-border">
+          <div className="theme-card rounded-[20px] max-w-lg w-full p-6 relative shadow-2xl border-t-2 primary-border">
             <button onClick={() => setShowCreateModal(false)} className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-white/10 theme-text-sub cursor-pointer"><X className="w-5 h-5" /></button>
             <h2 className="font-heading text-xl font-bold theme-text mb-1 flex items-center gap-2"><PlusCircle className="w-5 h-5 secondary-text" /> Buat Proyek Baru</h2>
             <p className="text-xs theme-text-sub mb-6">Publikasikan ide kolaborasi ke jaringan verifikasi Verstack.</p>
@@ -199,7 +199,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab }) => {
                 <div>
                   <label className="block text-xs font-medium theme-text mb-1.5">Kategori Bidang</label>
                   <select value={newProject.category} onChange={(e) => setNewProject({...newProject, category: e.target.value})}
-                    className="w-full bg-[#141519] border theme-border rounded-lg px-3.5 py-2.5 text-xs theme-text focus:outline-none focus:border-[var(--color-primary)]">
+                    className="w-full bg-[var(--color-elevated)] border theme-border rounded-lg px-3.5 py-2.5 text-xs theme-text focus:outline-none focus:border-[var(--color-primary)]">
                     {categories.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
