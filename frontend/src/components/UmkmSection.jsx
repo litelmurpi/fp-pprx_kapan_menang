@@ -113,7 +113,7 @@ const UmkmSection = ({ currentUser, setActiveTab }) => {
       {/* Partner Modal */}
       {showPartnerModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="theme-card bg-[#141519] dark:bg-[#141519] rounded-[20px] max-w-lg w-full p-6 relative shadow-2xl border-t-2 info-border">
+          <div className="theme-card rounded-[20px] max-w-lg w-full p-6 relative shadow-2xl border-t-2 info-border">
             <button onClick={() => setShowPartnerModal(false)} className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-white/10 theme-text-sub cursor-pointer"><X className="w-5 h-5" /></button>
             <h2 className="font-heading text-xl font-bold theme-text mb-1 flex items-center gap-2"><Store className="w-5 h-5 info-text" /> Pengajuan Mitra UMKM Baru</h2>
             <p className="text-xs theme-text-sub mb-6">Ajukan kebutuhan digitalisasi usaha Anda untuk dikerjakan oleh tim mahasiswa terverifikasi Verstack.</p>

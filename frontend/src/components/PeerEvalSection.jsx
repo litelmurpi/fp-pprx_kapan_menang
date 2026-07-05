@@ -183,7 +183,7 @@ const PeerEvalSection = ({ currentUser }) => {
               <label className="block text-[11px] font-semibold theme-text-muted uppercase tracking-wider mb-1.5 font-mono-tech">
                 SHA-256 Cryptographic Proof Hash:
               </label>
-              <div className="bg-[#08090A] border border-[#374151] rounded-xl p-3 flex items-center justify-between gap-2 shadow-inner">
+              <div className="bg-[var(--color-elevated)] border theme-border rounded-xl p-3 flex items-center justify-between gap-2 shadow-inner">
                 <code className="font-mono-tech text-[11px] primary-text truncate block w-full">
                   {mockPortfolio.verificationHash}
                 </code>
