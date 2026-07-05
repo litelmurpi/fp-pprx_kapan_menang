@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
-#[Fillable(['proyek_id', 'mahasiswa_id', 'peran', 'tanggal_join'])]
+#[Fillable(['proyek_id', 'mahasiswa_id', 'peran', 'status', 'tanggal_join'])]
 class AnggotaTim extends Model
 {
     use HasFactory;

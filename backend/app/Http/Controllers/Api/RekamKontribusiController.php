@@ -36,8 +36,10 @@ class RekamKontribusiController extends Controller
                     'peran' => $at->peran,
                     'tanggal_join' => $at->tanggal_join,
                     'skor_rata_rata' => $at->rekamKontribusi->skor_rata_rata,
+                    'persentase_ketepatan_waktu' => $at->rekamKontribusi->persentase_ketepatan_waktu,
                     'ringkasan_kontribusi' => $at->rekamKontribusi->ringkasan_kontribusi,
                     'status_validasi' => $at->rekamKontribusi->status_validasi,
+                    'flag_alasan' => $at->rekamKontribusi->flag_alasan,
                     'hash_data' => $at->rekamKontribusi->hash_data,
                     'dibuat_pada' => $at->rekamKontribusi->dibuat_pada,
                 ];
@@ -73,8 +75,8 @@ class RekamKontribusiController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'status_validasi' => 'required|in:final,rejected',
-            'catatan' => 'nullable|string',
+            'status_validasi' => 'required|in:final,draft',
+            'catatan' => 'required_if:status_validasi,draft|string',
         ]);
 
         if ($validator->fails()) {
@@ -85,7 +87,7 @@ class RekamKontribusiController extends Controller
         }
 
         $newStatus = $request->status_validasi;
-        $catatan = $request->catatan ? " (Divalidasi oleh " . auth()->user()->name . ": " . $request->catatan . ")" : "";
+        $catatan = $request->catatan ? " (Catatan validator " . auth()->user()->name . ": " . $request->catatan . ")" : "";
 
         $report->update([
             'status_validasi' => $newStatus,
@@ -96,6 +98,52 @@ class RekamKontribusiController extends Controller
         return response()->json([
             'message' => 'Report validated successfully',
             'report' => $report
+        ]);
+    }
+
+    public function getPublicPortfolio($nim)
+    {
+        $mahasiswa = Mahasiswa::where('nim', $nim)->with('user')->first();
+        if (!$mahasiswa) {
+            return response()->json(['message' => 'Student not found'], 404);
+        }
+
+        $anggotaTims = AnggotaTim::where('mahasiswa_id', $mahasiswa->id)
+            ->where('status', 'aktif')
+            ->with(['proyek.kategoriProyek', 'rekamKontribusi'])
+            ->get();
+
+        $portfolio = [];
+        foreach ($anggotaTims as $at) {
+            if ($at->rekamKontribusi && $at->rekamKontribusi->status_validasi === 'final') {
+                $portfolio[] = [
+                    'proyek_id' => $at->proyek->id,
+                    'judul_proyek' => $at->proyek->judul,
+                    'kategori' => $at->proyek->kategoriProyek->nama,
+                    'label_simulasi' => $at->proyek->label_simulasi,
+                    'peran' => $at->peran,
+                    'tanggal_join' => $at->tanggal_join,
+                    'skor_rata_rata' => $at->rekamKontribusi->skor_rata_rata,
+                    'persentase_ketepatan_waktu' => $at->rekamKontribusi->persentase_ketepatan_waktu,
+                    'ringkasan_kontribusi' => $at->rekamKontribusi->ringkasan_kontribusi,
+                    'status_validasi' => $at->rekamKontribusi->status_validasi,
+                    'flag_alasan' => $at->rekamKontribusi->flag_alasan,
+                    'hash_data' => $at->rekamKontribusi->hash_data,
+                    'dibuat_pada' => $at->rekamKontribusi->dibuat_pada,
+                ];
+            }
+        }
+
+        return response()->json([
+            'student' => [
+                'user' => [
+                    'name' => $mahasiswa->user->name,
+                ],
+                'nim' => $mahasiswa->nim,
+                'prodi' => $mahasiswa->prodi,
+                'minat_bidang' => $mahasiswa->minat_bidang,
+            ],
+            'portfolio' => $portfolio
         ]);
     }
 }

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\RekamKontribusiController;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/portfolio/{nim}', [RekamKontribusiController::class, 'getPublicPortfolio']);
 
 Route::get('/health', function () {
     return response()->json([
@@ -51,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/proyek/{id}/join', [MatchmakingController::class, 'joinTeam']);
     Route::post('/proyek/{id}/members', [MatchmakingController::class, 'addMember']);
     Route::delete('/proyek/{id}/members/{memberId}', [MatchmakingController::class, 'removeMember']);
+    Route::post('/proyek/{id}/members/{memberId}/respond', [MatchmakingController::class, 'respondMembership']);
 
     // Checkpoints (Milestones)
     Route::get('/proyek/{proyekId}/checkpoints', [CheckpointController::class, 'getProjectCheckpoints']);

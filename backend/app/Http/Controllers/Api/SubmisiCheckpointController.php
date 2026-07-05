@@ -37,6 +37,7 @@ class SubmisiCheckpointController extends Controller
 
         $validator = Validator::make($request->all(), [
             'catatan_progres' => 'required|string',
+            'tautan_tugas' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -46,20 +47,30 @@ class SubmisiCheckpointController extends Controller
             ], 422);
         }
 
+        $serialized = json_encode([
+            'catatan' => $request->catatan_progres,
+            'tautan' => $request->tautan_tugas ?? ''
+        ]);
+
         $submisi = SubmisiCheckpoint::updateOrCreate(
             [
                 'checkpoint_id' => $checkpointId,
                 'anggota_tim_id' => $anggotaTim->id,
             ],
             [
-                'catatan_progres' => $request->catatan_progres,
+                'catatan_progres' => $serialized,
                 'waktu_submit' => now(),
             ]
         );
 
+        // Decode for response
+        $submisiArray = $submisi->toArray();
+        $submisiArray['catatan_progres'] = $request->catatan_progres;
+        $submisiArray['tautan_tugas'] = $request->tautan_tugas ?? '';
+
         return response()->json([
             'message' => 'Progress submitted successfully',
-            'submisi' => $submisi
+            'submisi' => $submisiArray
         ]);
     }
 
@@ -74,6 +85,25 @@ class SubmisiCheckpointController extends Controller
             ->with('anggotaTim.mahasiswa.user')
             ->get();
 
-        return response()->json($submissions);
+        $formatted = [];
+        foreach ($submissions as $sub) {
+            $subArray = $sub->toArray();
+            $catatanText = $sub->catatan_progres;
+            $tautan = '';
+            
+            if (is_string($catatanText) && str_starts_with($catatanText, '{') && str_ends_with($catatanText, '}')) {
+                $decoded = json_decode($catatanText, true);
+                if (isset($decoded['catatan'])) {
+                    $catatanText = $decoded['catatan'];
+                    $tautan = $decoded['tautan'] ?? '';
+                }
+            }
+            
+            $subArray['catatan_progres'] = $catatanText;
+            $subArray['tautan_tugas'] = $tautan;
+            $formatted[] = $subArray;
+        }
+
+        return response()->json($formatted);
     }
 }

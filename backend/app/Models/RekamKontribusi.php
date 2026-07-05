@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
-#[Fillable(['anggota_tim_id', 'skor_rata_rata', 'ringkasan_kontribusi', 'status_validasi', 'hash_data', 'dibuat_pada'])]
+#[Fillable(['anggota_tim_id', 'skor_rata_rata', 'persentase_ketepatan_waktu', 'ringkasan_kontribusi', 'status_validasi', 'flag_alasan', 'hash_data', 'dibuat_pada'])]
 class RekamKontribusi extends Model
 {
     use HasFactory;
@@ -19,6 +19,7 @@ class RekamKontribusi extends Model
         return [
             'dibuat_pada' => 'datetime',
             'skor_rata_rata' => 'float',
+            'persentase_ketepatan_waktu' => 'float',
         ];
     }
 

@@ -35,6 +35,11 @@ class PeerEvaluasiController extends Controller
             return response()->json(['message' => 'Project not found'], 404);
         }
 
+        // Gate: Peer evaluation can only be submitted after project is completed
+        if ($proyek->status !== 'selesai') {
+            return response()->json(['message' => 'Peer evaluation can only be filled after the project status is finished ("selesai")'], 400);
+        }
+
         $user = $request->user();
         if ($user->role !== 'mahasiswa') {
             return response()->json(['message' => 'Only student team members can submit peer evaluations'], 403);
@@ -52,8 +57,10 @@ class PeerEvaluasiController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'penerima_anggota_id' => 'required|exists:anggota_tims,id',
-            'skor_kontribusi' => 'required|integer|min:1|max:5',
+            'penerima_anggota_id' => 'required_without:dievaluasi_id|exists:anggota_tims,id',
+            'dievaluasi_id' => 'required_without:penerima_anggota_id|exists:anggota_tims,id',
+            'skor_kontribusi' => 'required_without:skor|integer|min:1|max:5',
+            'skor' => 'required_without:skor_kontribusi|integer|min:1|max:5',
             'komentar' => 'nullable|string|max:1000',
         ]);
 
@@ -64,7 +71,8 @@ class PeerEvaluasiController extends Controller
             ], 422);
         }
 
-        $penerimaId = $request->penerima_anggota_id;
+        $penerimaId = $request->penerima_anggota_id ?? $request->dievaluasi_id;
+        $skorKontribusi = $request->skor_kontribusi ?? $request->skor;
 
         // Check if evaluating self
         if ($pemberi->id == $penerimaId) {
@@ -89,7 +97,7 @@ class PeerEvaluasiController extends Controller
                     'penerima_id' => $penerimaId,
                 ],
                 [
-                    'skor_kontribusi' => $request->skor_kontribusi,
+                    'skor_kontribusi' => $skorKontribusi,
                     'komentar' => $request->komentar,
                     'waktu_evaluasi' => now(),
                 ]
@@ -136,9 +144,9 @@ class PeerEvaluasiController extends Controller
                 $scores = $evals->pluck('skor_kontribusi')->toArray();
                 $avgScore = count($scores) > 0 ? array_sum($scores) / count($scores) : 5.0;
 
-                // Check Variance:
-                // Standard Deviation calculation:
+                // Check Variance & Standard Deviation:
                 $varianceFlag = false;
+                $flagAlasan = null;
                 if (count($scores) > 1) {
                     $mean = array_sum($scores) / count($scores);
                     $sumSquareDiff = 0;
@@ -147,26 +155,52 @@ class PeerEvaluasiController extends Controller
                     }
                     $stdDev = sqrt($sumSquareDiff / count($scores));
 
-                    // If standard deviation is extremely low (e.g. < 0.5) and average is high (e.g. >= 4.5),
-                    // it indicates potential collusion ("saling puji / kongkalikong").
-                    if ($stdDev < 0.5 && $mean >= 4.5) {
+                    // If stdDev < 0.5 and mean > 4.0 -> kongkalikong
+                    if ($stdDev < 0.5 && $mean > 4.0) {
                         $varianceFlag = true;
+                        $flagAlasan = 'kongkalikong';
+                    } elseif ($stdDev > 2.0) { // If stdDev > 2.0 -> outlier
+                        $varianceFlag = true;
+                        $flagAlasan = 'outlier';
                     }
                 }
+
+                // Calculate persentase_ketepatan_waktu:
+                $checkpoints = \App\Models\Checkpoint::where('proyek_id', $proyek->id)->get();
+                $totalCheckpoints = $checkpoints->count();
+                $onTimeSubmissions = 0;
+
+                foreach ($checkpoints as $cp) {
+                    $submission = \App\Models\SubmisiCheckpoint::where('checkpoint_id', $cp->id)
+                        ->where('anggota_tim_id', $member->id)
+                        ->first();
+                    if ($submission) {
+                        $deadlineTime = \Carbon\Carbon::parse($cp->deadline)->endOfDay();
+                        $submitTime = \Carbon\Carbon::parse($submission->waktu_submit);
+                        if ($submitTime->lte($deadlineTime)) {
+                            $onTimeSubmissions++;
+                        }
+                    }
+                }
+                $persentaseKetepatan = $totalCheckpoints > 0 ? ($onTimeSubmissions / $totalCheckpoints) * 100 : 100.0;
 
                 // If flagged, status is 'menunggu_acc_dosen', otherwise 'final'
                 $statusValidasi = $varianceFlag ? 'menunggu_acc_dosen' : 'final';
                 $ringkasan = "Evaluasi kontribusi tim untuk peran {$member->peran}.";
-                if ($varianceFlag) {
-                    $ringkasan .= " [FLAGGED: Evaluasi terdeteksi memiliki variasi sangat rendah, memerlukan peninjauan dosen/PIC]";
+                if ($flagAlasan === 'kongkalikong') {
+                    $ringkasan .= " [FLAGGED: Evaluasi terdeteksi memiliki variasi sangat rendah (kongkalikong), memerlukan peninjauan dosen/PIC]";
+                } elseif ($flagAlasan === 'outlier') {
+                    $ringkasan .= " [FLAGGED: Evaluasi terdeteksi memiliki variasi sangat tinggi (outlier), memerlukan peninjauan dosen/PIC]";
                 }
 
                 RekamKontribusi::updateOrCreate(
                     ['anggota_tim_id' => $member->id],
                     [
                         'skor_rata_rata' => $avgScore,
+                        'persentase_ketepatan_waktu' => $persentaseKetepatan,
                         'ringkasan_kontribusi' => $ringkasan,
                         'status_validasi' => $statusValidasi,
+                        'flag_alasan' => $flagAlasan,
                         'dibuat_pada' => now(),
                         'hash_data' => hash('sha256', $member->id . '|' . $avgScore . '|' . $statusValidasi . '|' . now()->toDateTimeString()), // Phase 2 setup
                     ]

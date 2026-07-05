@@ -123,9 +123,12 @@ class MatchmakingAndPeerEvalTest extends TestCase
         $m3 = Mahasiswa::create(['user_id' => $u3->id, 'nim' => '22.11.0003', 'prodi' => 'IF', 'jam_luang_per_minggu' => 8]);
 
         // Join them all to the project
-        $at1 = AnggotaTim::create(['proyek_id' => $this->project->id, 'mahasiswa_id' => $m1->id, 'peran' => 'Backend Dev', 'tanggal_join' => now()]);
-        $at2 = AnggotaTim::create(['proyek_id' => $this->project->id, 'mahasiswa_id' => $m2->id, 'peran' => 'Designer', 'tanggal_join' => now()]);
-        $at3 = AnggotaTim::create(['proyek_id' => $this->project->id, 'mahasiswa_id' => $m3->id, 'peran' => 'Frontend Dev', 'tanggal_join' => now()]);
+        $at1 = AnggotaTim::create(['proyek_id' => $this->project->id, 'mahasiswa_id' => $m1->id, 'peran' => 'Backend Dev', 'status' => 'aktif', 'tanggal_join' => now()]);
+        $at2 = AnggotaTim::create(['proyek_id' => $this->project->id, 'mahasiswa_id' => $m2->id, 'peran' => 'Designer', 'status' => 'aktif', 'tanggal_join' => now()]);
+        $at3 = AnggotaTim::create(['proyek_id' => $this->project->id, 'mahasiswa_id' => $m3->id, 'peran' => 'Frontend Dev', 'status' => 'aktif', 'tanggal_join' => now()]);
+
+        // Set project status to selesai so evaluations can be submitted
+        $this->project->update(['status' => 'selesai']);
 
         // Case: Collusion (everyone gives everyone else a flat 5 out of 5)
         // Budi (at1) evaluates Andi (at2) and Citra (at3)

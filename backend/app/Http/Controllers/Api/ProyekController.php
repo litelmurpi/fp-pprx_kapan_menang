@@ -40,7 +40,51 @@ class ProyekController extends Controller
         }
 
         $proyek = $query->orderBy('created_at', 'desc')->get();
-        return response()->json($proyek);
+        
+        $formattedProjects = [];
+        foreach ($proyek as $p) {
+            $pArray = $p->toArray();
+            $pArray['kategori'] = $p->kategoriProyek->nama;
+            $pArray['max_anggota'] = $p->kebutuhanSkills->sum('jumlah_dibutuhkan');
+            $pArray['tenggat_waktu'] = $p->tanggal_selesai ? $p->tanggal_selesai->toDateString() : null;
+            $pArray['dibuat_oleh_id'] = $p->pembuat_id;
+
+            $members = [];
+            foreach ($p->anggotaTims as $at) {
+                if ($at->status === 'aktif') {
+                    $members[] = [
+                        'id' => $at->mahasiswa_id,
+                        'anggota_tim_id' => $at->id,
+                        'user_id' => $at->mahasiswa->user_id,
+                        'user' => [
+                            'name' => $at->mahasiswa->user->name,
+                            'email' => $at->mahasiswa->user->email,
+                        ],
+                        'nim' => $at->mahasiswa->nim,
+                        'prodi' => $at->mahasiswa->prodi,
+                        'peran' => $at->peran,
+                    ];
+                }
+            }
+            $pArray['members'] = $members;
+
+            $skillsNeeded = [];
+            foreach ($p->kebutuhanSkills as $ks) {
+                $skillsNeeded[] = [
+                    'id' => $ks->skill->id,
+                    'name' => $ks->skill->nama,
+                    'kategori' => $ks->skill->kategori,
+                    'jumlah_dibutuhkan' => $ks->jumlah_dibutuhkan,
+                ];
+            }
+            $pArray['skills_needed'] = $skillsNeeded;
+
+            $formattedProjects[] = $pArray;
+        }
+
+        return response()->json([
+            'data' => $formattedProjects
+        ]);
     }
 
     public function show($id)
@@ -58,12 +102,80 @@ class ProyekController extends Controller
             return response()->json(['message' => 'Project not found'], 404);
         }
 
-        return response()->json($proyek);
+        $proyekArray = $proyek->toArray();
+        $proyekArray['dibuat_oleh_id'] = $proyek->pembuat_id;
+        $proyekArray['kategori'] = $proyek->kategoriProyek->nama;
+        $proyekArray['max_anggota'] = $proyek->kebutuhanSkills->sum('jumlah_dibutuhkan');
+        $proyekArray['tenggat_waktu'] = $proyek->tanggal_selesai ? $proyek->tanggal_selesai->toDateString() : null;
+
+        $members = [];
+        foreach ($proyek->anggotaTims as $at) {
+            if ($at->status === 'aktif') {
+                $members[] = [
+                    'id' => $at->mahasiswa_id,
+                    'anggota_tim_id' => $at->id,
+                    'user_id' => $at->mahasiswa->user_id,
+                    'user' => [
+                        'name' => $at->mahasiswa->user->name,
+                        'email' => $at->mahasiswa->user->email,
+                    ],
+                    'nim' => $at->mahasiswa->nim,
+                    'prodi' => $at->mahasiswa->prodi,
+                    'peran' => $at->peran,
+                ];
+            }
+        }
+        $proyekArray['members'] = $members;
+
+        return response()->json([
+            'data' => $proyekArray
+        ]);
     }
 
     public function store(Request $request)
     {
         $user = $request->user();
+
+        // Normalize frontend input keys to backend validation expectations
+        $kategoriName = $request->kategori;
+        $labelSimulasi = false;
+
+        if ($kategoriName === 'Internal') {
+            $kategoriSearch = 'Internal UKM';
+        } elseif ($kategoriName === 'Lomba') {
+            $kategoriSearch = 'Lomba';
+        } elseif ($kategoriName === 'Simulasi UMKM') {
+            $kategoriSearch = 'UMKM / Komunitas';
+            $labelSimulasi = true;
+        } else {
+            $kategoriSearch = $kategoriName;
+        }
+
+        $kategori = KategoriProyek::where('nama', $kategoriSearch)->first();
+        $kategoriId = $kategori ? $kategori->id : null;
+
+        if (!$request->has('tanggal_mulai')) {
+            $request->merge(['tanggal_mulai' => now()->toDateString()]);
+        }
+        if (!$request->has('tanggal_selesai') && $request->has('tenggat_waktu')) {
+            $request->merge(['tanggal_selesai' => $request->tenggat_waktu]);
+        }
+        
+        $request->merge([
+            'kategori_proyek_id' => $kategoriId,
+            'label_simulasi' => $labelSimulasi || $request->label_simulasi ?? false,
+        ]);
+
+        if ($request->has('skills_needed') && is_array($request->skills_needed)) {
+            $skillsData = [];
+            foreach ($request->skills_needed as $skillId) {
+                $skillsData[] = [
+                    'skill_id' => $skillId,
+                    'jumlah_dibutuhkan' => 1,
+                ];
+            }
+            $request->merge(['skills' => $skillsData]);
+        }
         
         $validator = Validator::make($request->all(), [
             'judul' => 'required|string|max:255',
@@ -84,9 +196,9 @@ class ProyekController extends Controller
             ], 422);
         }
 
-        $kategori = KategoriProyek::find($request->kategori_proyek_id);
+        $kategoriObj = KategoriProyek::find($request->kategori_proyek_id);
         $status = 'open';
-        if ($kategori->memerlukan_approval) {
+        if ($kategoriObj && $kategoriObj->memerlukan_approval) {
             $status = 'waiting_approval';
         }
 
@@ -112,7 +224,19 @@ class ProyekController extends Controller
                 ]);
             }
 
-            // If user is mahasiswa, automatically add them to the team as project owner / lead
+            // Save checkpoints if provided
+            if ($request->has('checkpoints') && is_array($request->checkpoints)) {
+                foreach ($request->checkpoints as $cp) {
+                    \App\Models\Checkpoint::create([
+                        'proyek_id' => $proyek->id,
+                        'judul_milestone' => $cp['judul'] ?? $cp['judul_milestone'] ?? 'Checkpoint',
+                        'deadline' => $cp['tenggat_waktu'] ?? $cp['deadline'] ?? now()->addWeeks(2)->toDateString(),
+                        'status' => 'pending',
+                    ]);
+                }
+            }
+
+            // If user is mahasiswa, automatically add them to the team as project owner / lead with status active
             if ($user->role === 'mahasiswa') {
                 $mahasiswa = Mahasiswa::where('user_id', $user->id)->first();
                 if ($mahasiswa) {
@@ -120,6 +244,7 @@ class ProyekController extends Controller
                         'proyek_id' => $proyek->id,
                         'mahasiswa_id' => $mahasiswa->id,
                         'peran' => 'Project Leader',
+                        'status' => 'aktif',
                         'tanggal_join' => now(),
                     ]);
                 }

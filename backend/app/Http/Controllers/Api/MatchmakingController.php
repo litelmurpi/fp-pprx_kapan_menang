@@ -30,6 +30,7 @@ class MatchmakingController extends Controller
             // Check if student is already in the project team
             $isAlreadyMember = AnggotaTim::where('proyek_id', $id)
                 ->where('mahasiswa_id', $mhs->id)
+                ->whereIn('status', ['aktif', 'diundang', 'mengajukan'])
                 ->exists();
 
             if ($isAlreadyMember) {
@@ -61,7 +62,7 @@ class MatchmakingController extends Controller
 
             // 3. Calculate onboarding_bonus (10%)
             $onboardingBonus = 0;
-            if ($mhs->anggotaTims->count() === 0) {
+            if ($mhs->anggotaTims->where('status', 'aktif')->count() === 0) {
                 $onboardingBonus = 1.0;
             }
 
@@ -100,7 +101,7 @@ class MatchmakingController extends Controller
                     'skill_score' => round($skillScore, 4),
                     'minat_bonus' => $minatBonus,
                     'onboarding_bonus' => $onboardingBonus,
-                    'total_projects' => $mhs->anggotaTims->count()
+                    'total_projects' => $mhs->anggotaTims->where('status', 'aktif')->count()
                 ],
                 'skor_akhir' => round($skorAkhir, 4)
             ];
@@ -138,21 +139,23 @@ class MatchmakingController extends Controller
         // Check if already a member
         $isMember = AnggotaTim::where('proyek_id', $proyek->id)
             ->where('mahasiswa_id', $mahasiswa->id)
+            ->whereIn('status', ['aktif', 'diundang', 'mengajukan'])
             ->exists();
 
         if ($isMember) {
-            return response()->json(['message' => 'You are already a member of this team'], 400);
+            return response()->json(['message' => 'You are already a member or have a pending request/invitation for this team'], 400);
         }
 
         $anggota = AnggotaTim::create([
             'proyek_id' => $proyek->id,
             'mahasiswa_id' => $mahasiswa->id,
             'peran' => $request->peran ?? 'Team Member',
-            'tanggal_join' => now(),
+            'status' => 'mengajukan',
+            'tanggal_join' => null,
         ]);
 
         return response()->json([
-            'message' => 'Successfully joined project team',
+            'message' => 'Successfully requested to join project team',
             'anggota' => $anggota
         ]);
     }
@@ -177,21 +180,23 @@ class MatchmakingController extends Controller
         // Check if already a member
         $isMember = AnggotaTim::where('proyek_id', $proyek->id)
             ->where('mahasiswa_id', $request->mahasiswa_id)
+            ->whereIn('status', ['aktif', 'diundang', 'mengajukan'])
             ->exists();
 
         if ($isMember) {
-            return response()->json(['message' => 'Candidate is already a member of this team'], 400);
+            return response()->json(['message' => 'Candidate is already a member or has a pending request/invitation for this team'], 400);
         }
 
         $anggota = AnggotaTim::create([
             'proyek_id' => $proyek->id,
             'mahasiswa_id' => $request->mahasiswa_id,
             'peran' => $request->peran,
-            'tanggal_join' => now(),
+            'status' => 'diundang',
+            'tanggal_join' => null,
         ]);
 
         return response()->json([
-            'message' => 'Member added successfully to team',
+            'message' => 'Member invited successfully to team',
             'anggota' => $anggota
         ]);
     }
@@ -217,5 +222,61 @@ class MatchmakingController extends Controller
 
         $anggota->delete();
         return response()->json(['message' => 'Team member removed successfully']);
+    }
+
+    public function respondMembership(Request $request, $id, $memberId)
+    {
+        $proyek = Proyek::find($id);
+        if (!$proyek) {
+            return response()->json(['message' => 'Project not found'], 404);
+        }
+
+        $anggota = AnggotaTim::where('proyek_id', $id)
+            ->where('id', $memberId)
+            ->first();
+
+        if (!$anggota) {
+            return response()->json(['message' => 'Team member request/invitation not found'], 404);
+        }
+
+        $request->validate([
+            'action' => 'required|in:accept,reject',
+        ]);
+
+        $user = $request->user();
+        $action = $request->action;
+
+        if ($anggota->status === 'mengajukan') {
+            // Student applied, only project leader/owner or admin can decide
+            if ($user->id !== $proyek->pembuat_id && $user->role !== 'admin') {
+                return response()->json(['message' => 'Only the project leader can approve this request'], 403);
+            }
+        } elseif ($anggota->status === 'diundang') {
+            // Student was invited, only the student themselves can decide
+            $mahasiswa = Mahasiswa::where('user_id', $user->id)->first();
+            if (!$mahasiswa || $mahasiswa->id !== $anggota->mahasiswa_id) {
+                return response()->json(['message' => 'Only the invited student can respond to this invitation'], 403);
+            }
+        } else {
+            return response()->json(['message' => 'This request or invitation is already processed or active. Current status: ' . $anggota->status], 400);
+        }
+
+        if ($action === 'accept') {
+            $anggota->update([
+                'status' => 'aktif',
+                'tanggal_join' => now(),
+            ]);
+            $msg = 'Successfully joined the team';
+        } else {
+            $anggota->update([
+                'status' => 'ditolak',
+            ]);
+            $msg = 'Successfully declined/rejected';
+        }
+
+        return response()->json([
+            'message' => $msg,
+            'anggota' => $anggota
+        ]);
     }
 }

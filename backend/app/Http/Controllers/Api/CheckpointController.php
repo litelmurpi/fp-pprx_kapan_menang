@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CheckpointController extends Controller
 {
-    public function getProjectCheckpoints($proyekId)
+    public function getProjectCheckpoints(Request $request, $proyekId)
     {
         $proyek = Proyek::find($proyekId);
         if (!$proyek) {
@@ -21,7 +21,65 @@ class CheckpointController extends Controller
             ->orderBy('deadline', 'asc')
             ->get();
 
-        return response()->json($checkpoints);
+        $user = $request->user();
+        $mahasiswa = null;
+        $anggotaTim = null;
+        if ($user && $user->role === 'mahasiswa') {
+            $mahasiswa = \App\Models\Mahasiswa::where('user_id', $user->id)->first();
+            if ($mahasiswa) {
+                $anggotaTim = \App\Models\AnggotaTim::where('proyek_id', $proyekId)
+                    ->where('mahasiswa_id', $mahasiswa->id)
+                    ->first();
+            }
+        }
+
+        // Format to match frontend expectations
+        $formatted = [];
+        $count = $checkpoints->count();
+        foreach ($checkpoints as $index => $cp) {
+            $cpArray = $cp->toArray();
+            $cpArray['judul'] = $cp->judul_milestone;
+            $cpArray['tenggat_waktu'] = $cp->deadline ? $cp->deadline->toDateString() : null;
+            
+            // Mock bobot_kontribusi evenly or as 30, 40, 30
+            if ($count === 3) {
+                $weights = [30, 40, 30];
+                $cpArray['bobot_kontribusi'] = $weights[$index];
+            } else {
+                $cpArray['bobot_kontribusi'] = $count > 0 ? round(100 / $count) : 0;
+            }
+
+            // Find current user's submission
+            $submisi = null;
+            if ($anggotaTim) {
+                $submisiObj = \App\Models\SubmisiCheckpoint::where('checkpoint_id', $cp->id)
+                    ->where('anggota_tim_id', $anggotaTim->id)
+                    ->first();
+                if ($submisiObj) {
+                    $catatanText = $submisiObj->catatan_progres;
+                    $tautan = '';
+                    if (is_string($catatanText) && str_starts_with($catatanText, '{') && str_ends_with($catatanText, '}')) {
+                        $decoded = json_decode($catatanText, true);
+                        if (isset($decoded['catatan'])) {
+                            $catatanText = $decoded['catatan'];
+                            $tautan = $decoded['tautan'] ?? '';
+                        }
+                    }
+                    $submisi = [
+                        'catatan_progres' => $catatanText,
+                        'tautan_tugas' => $tautan,
+                        'waktu_submit' => $submisiObj->waktu_submit ? $submisiObj->waktu_submit->toDateTimeString() : null,
+                    ];
+                }
+            }
+            $cpArray['submisi'] = $submisi;
+
+            $formatted[] = $cpArray;
+        }
+
+        return response()->json([
+            'data' => $formatted
+        ]);
     }
 
     public function store(Request $request, $proyekId)
