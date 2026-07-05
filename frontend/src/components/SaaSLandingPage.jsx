@@ -160,12 +160,6 @@ const SaaSLandingPage = ({ setActiveTab }) => {
                 <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
                 <span className="ml-2 font-mono-tech text-xs theme-text-sub">verstack-synergy-matrix.ai</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full brand-badge text-[11px] font-mono-tech font-bold flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full brand-bg animate-ping" />
-                  AI MATCH ENGINE ACTIVE
-                </span>
-              </div>
             </div>
 
             {/* Dashboard Grid Content */}
