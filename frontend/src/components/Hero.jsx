@@ -1,232 +1,145 @@
 import React from 'react';
-import { ArrowRight, Terminal, ShieldCheck, Cpu, Users } from 'lucide-react';
+import { ArrowRight, Terminal, ShieldCheck, Cpu, Users, GitCommit, CheckCircle2 } from 'lucide-react';
 import { PixelRobot, PixelStar, PixelShield, PixelTrophy, PixelCloud, PixelDino } from './PixelIcons';
 
 const Hero = ({ setActiveTab }) => {
   return (
-    <section className="bg-white overflow-hidden border-b border-[#E5E7EB]">
+    <section className="theme-canvas overflow-hidden border-b theme-border relative transition-colors duration-300">
+      
+      {/* Linear Spotlight Ambient Glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-[var(--color-primary)]/15 to-[var(--color-secondary)]/15 blur-[130px] rounded-full pointer-events-none -z-10" />
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-20 relative">
         
-        {/* Floating Pixel Decorations (Subtle accents per DESIGN.md) */}
-        <div className="absolute top-10 right-10 text-[#22C55E]/40 hidden md:block animate-pulse">
-          <PixelCloud className="w-16 h-12" />
+        {/* Subtle decorative accent */}
+        <div className="absolute top-8 right-8 text-[var(--color-secondary)]/30 hidden md:block animate-pulse">
+          <PixelCloud className="w-14 h-10" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-6 sm:pt-10">
           
           {/* Left Column: Headline & CTAs */}
           <div className="lg:col-span-7 text-left z-10">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#F3F4F6] border border-[#E5E7EB] rounded-full text-xs font-semibold text-[#111827] mb-6">
-              <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-ping" />
-              <span>Platform Kolaborasi Kampus Terverifikasi SHA-256</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/5 dark:bg-white/5 border theme-border rounded-full text-xs font-medium theme-text-sub mb-6 shadow-xs">
+              <span className="w-2 h-2 rounded-full primary-bg animate-pulse" />
+              <span>Verstack High-Performance Workspace v2.0</span>
             </div>
 
-            <h1 className="font-display-1 text-4xl sm:text-6xl font-bold text-[#111827] leading-[1.05] tracking-tight">
+            <h1 className="font-display text-4xl sm:text-6xl font-bold leading-[1.08] tracking-tight theme-text">
               Build projects with <br />
-              <span className="text-[#22C55E]">verified teams.</span><br />
-              No free-riders.
+              <span className="primary-text font-extrabold">verified teams.</span><br />
+              Zero free-riders.
             </h1>
 
-            <p className="text-[#4B5563] text-base sm:text-lg font-normal mt-6 max-w-xl leading-relaxed">
-              Temukan rekan tim berbasis skill aktual, pantau progres mingguan melalui checkpoint transparan, dan dapatkan portofolio kriptografis <strong className="text-[#111827] font-semibold">SHA-256</strong> yang diakui industri.
+            <p className="theme-text-sub text-base sm:text-lg font-normal mt-6 max-w-xl leading-relaxed">
+              Platform kolaborasi kampus berpresisi tinggi. Temukan rekan tim berbasis kompatibilitas skill aktual, pantau progres mingguan via checkpoint transparan, dan terbitkan portofolio kriptografis <strong className="theme-text font-semibold">SHA-256</strong>.
             </p>
 
             {/* CTA buttons */}
             <div className="flex flex-wrap items-center gap-4 mt-8">
               <button
                 onClick={() => setActiveTab('matchmaking')}
-                className="bg-[#22C55E] text-white font-semibold text-sm px-8 py-4 rounded-xl hover:bg-[#16a34a] transition-all cursor-pointer inline-flex items-center gap-2 border border-[#16a34a] shadow-sm hover:translate-y-[-2px]"
+                className="btn-primary text-sm px-7 py-3.5 rounded-lg inline-flex items-center gap-2 cursor-pointer"
               >
-                Mulai Matchmaking
-                <ArrowRight className="w-5 h-5" />
+                <span>Mulai Matchmaking</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setActiveTab('workspace')}
-                className="bg-white text-[#111827] font-medium text-sm px-6 py-4 rounded-xl border border-[#E5E7EB] hover:bg-[#FAFAFA] transition-all cursor-pointer shadow-sm hover:border-[#111827]"
+                className="btn-secondary text-sm px-6 py-3.5 rounded-lg inline-flex items-center gap-2 cursor-pointer"
               >
-                Lihat Ruang Kerja →
+                <span>Lihat Ruang Kerja</span>
+                <span className="font-mono-tech text-xs opacity-60">⌘K</span>
               </button>
             </div>
 
-            {/* Bottom trust bar */}
-            <div className="mt-12 pt-6 border-t border-[#E5E7EB] flex items-center gap-6 text-xs text-[#6B7280] font-medium">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#22C55E]" />
-                <span>Anti-Free-Rider System</span>
+            {/* Tech badges / stats */}
+            <div className="grid grid-cols-3 gap-6 mt-14 pt-8 border-t theme-border-subtle">
+              <div>
+                <p className="text-2xl sm:text-3xl font-bold theme-text font-mono-tech tracking-tight">100%</p>
+                <p className="text-xs theme-text-muted mt-1">Audit Trail Immutable</p>
               </div>
-              <div className="flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-[#4F46E5]" />
-                <span>AI Weighted Score</span>
+              <div>
+                <p className="text-2xl sm:text-3xl font-bold theme-text font-mono-tech tracking-tight">SHA-256</p>
+                <p className="text-xs theme-text-muted mt-1">Verified Credentials</p>
+              </div>
+              <div>
+                <p className="text-2xl sm:text-3xl font-bold theme-text font-mono-tech tracking-tight">&lt;10%</p>
+                <p className="text-xs theme-text-muted mt-1">Free-Rider Threshold</p>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Digital Workspace Mockup with Pixel Accents */}
-          <div className="lg:col-span-5 relative mt-8 lg:mt-0">
-            <div className="relative bg-[#FAFAFA] border border-[#E5E7EB] rounded-[20px] p-6 shadow-sm group hover:border-[#22C55E] transition-all">
+          {/* Right Column: Linear Dashboard Preview Mockup */}
+          <div className="lg:col-span-5 relative">
+            <div className="theme-card rounded-[16px] p-6 shadow-2xl relative overflow-hidden border-t-2 primary-border">
               
-              {/* Top Bar of Mockup */}
-              <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4 mb-4">
+              {/* Top Bar / Header */}
+              <div className="flex items-center justify-between pb-4 mb-4 border-b theme-border-subtle">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-400" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <span className="text-xs font-mono text-[#6B7280] ml-2">workspace // checkpoint-audit</span>
+                  <span className="w-3 h-3 rounded-full bg-red-500/80" />
+                  <span className="w-3 h-3 rounded-full bg-amber-500/80" />
+                  <span className="w-3 h-3 rounded-full bg-green-500/80" />
+                  <span className="ml-2 font-mono-tech text-[11px] theme-text-sub font-medium">sprint-4-evaluation.log</span>
                 </div>
-                <span className="px-2 py-0.5 bg-green-100 text-green-800 font-medium text-[10px] rounded-full">
-                  Active Sprint
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono-tech font-semibold badge-primary">
+                  ● ACTIVE SPRINT
                 </span>
               </div>
 
-              {/* Mockup Card Content */}
-              <div className="space-y-3">
-                <div className="p-3.5 bg-white border border-[#E5E7EB] rounded-xl flex items-center justify-between shadow-xs">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-[#ecfdf5] text-[#166534] flex items-center justify-center font-bold text-xs">
-                      <PixelRobot className="w-5 h-5 text-[#22C55E]" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-[#111827]">Sistem Kasir UMKM Kopi</div>
-                      <div className="text-[11px] text-[#6B7280]">Checkpoint #3: Backend API Integration</div>
-                    </div>
+              {/* Mockup list item 1 */}
+              <div className="p-3.5 rounded-xl bg-white/5 dark:bg-white/5 border theme-border mb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 primary-text" />
+                    <span className="text-xs font-semibold theme-text">API Integration Checkpoint #3</span>
                   </div>
-                  <span className="text-xs font-mono font-bold text-[#22C55E]">94% Match</span>
+                  <span className="font-mono-tech text-[10px] theme-text-muted">2m ago</span>
                 </div>
-
-                <div className="p-3.5 bg-white border border-[#E5E7EB] rounded-xl flex items-center justify-between shadow-xs">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-[#e0e7ff] text-[#4338ca] flex items-center justify-center font-bold text-xs">
-                      <PixelShield className="w-5 h-5 text-[#4F46E5]" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-[#111827]">Audit SHA-256 Hash</div>
-                      <div className="text-[11px] text-[#6B7280] font-mono">8f9b...4a2e (Tamper-Proof)</div>
-                    </div>
-                  </div>
-                  <span className="px-2 py-1 bg-green-50 text-green-700 text-[10px] font-semibold rounded">Verified</span>
+                <div className="flex items-center justify-between mt-2.5 pt-2 border-t theme-border-subtle text-[11px]">
+                  <span className="theme-text-sub flex items-center gap-1">
+                    <GitCommit className="w-3.5 h-3.5 primary-text" /> commit <code className="font-mono-tech secondary-text">a8f9c20</code>
+                  </span>
+                  <span className="primary-text font-medium">Validated by System</span>
                 </div>
               </div>
 
-              {/* Mascot Accent Box */}
-              <div className="mt-5 pt-4 border-t border-[#E5E7EB] flex items-center justify-between">
+              {/* Mockup list item 2 (Flagged free rider simulation) */}
+              <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 mb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                    <span className="text-xs font-bold text-red-500 dark:text-red-400">Variance Alert: Low Participation</span>
+                  </div>
+                  <span className="font-mono-tech text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-500 font-bold">8% WORK</span>
+                </div>
+                <p className="text-[11px] text-red-600 dark:text-red-300 mt-1">
+                  Kontribusi anggota &lt;10% threshold rata-rata tim. Kredensial otomatis ditahan.
+                </p>
+              </div>
+
+              {/* Mockup list item 3 (AI skill fit) */}
+              <div className="p-3.5 rounded-xl bg-white/5 dark:bg-white/5 border theme-border flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#FAFAFA] border border-[#E5E7EB] flex items-center justify-center">
-                    <PixelDino className="w-5 h-5 text-[#22C55E]" />
+                  <div className="w-6 h-6 rounded badge-info flex items-center justify-center text-[10px] font-bold">
+                    AI
                   </div>
-                  <div className="text-xs text-[#4B5563]">
-                    <span className="font-semibold text-[#111827]">Kampus Dino:</span> "Tim seimbang, proyek tuntas!"
+                  <div>
+                    <p className="text-xs font-semibold theme-text">Frontend Engineer (React/Vite)</p>
+                    <p className="text-[10px] theme-text-muted">Proyek: e-Commerce Kasir UMKM</p>
                   </div>
                 </div>
-                <PixelStar className="w-4 h-4 text-[#F59E0B]" />
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* WHO WE ARE / STATISTIK SECTION */}
-      <div className="bg-[#FAFAFA] border-t border-[#E5E7EB] py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          
-          <div className="text-center mb-12">
-            <h2 className="font-heading-2 text-2xl sm:text-3xl font-bold text-[#111827]">
-              Platform Kolaborasi &amp; Digitalisasi Terpercaya
-            </h2>
-            <p className="text-sm text-[#6B7280] mt-2 max-w-xl mx-auto">
-              Sistem matchmaking keahlian aktual dengan akuntabilitas rekam jejak kolaborasi kampus.
-            </p>
-          </div>
-
-          {/* Statistic Card x 3 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            <div className="bg-white border border-[#E5E7EB] rounded-[20px] p-6 shadow-sm text-center relative overflow-hidden group hover:border-[#22C55E] transition-all">
-              <div className="text-4xl sm:text-5xl font-bold text-[#111827] font-display-1">24+</div>
-              <div className="text-xs font-semibold text-[#6B7280] mt-2 uppercase tracking-wider">UMKM Terdigitalisasi</div>
-              <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#22C55E]" />
-            </div>
-
-            <div className="bg-white border border-[#E5E7EB] rounded-[20px] p-6 shadow-sm text-center relative overflow-hidden group hover:border-[#4F46E5] transition-all">
-              <div className="text-4xl sm:text-5xl font-bold text-[#4F46E5] font-display-1">180+</div>
-              <div className="text-xs font-semibold text-[#6B7280] mt-2 uppercase tracking-wider">Mahasiswa Aktif Terlibat</div>
-              <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#4F46E5]" />
-            </div>
-
-            <div className="bg-white border border-[#E5E7EB] rounded-[20px] p-6 shadow-sm text-center relative overflow-hidden group hover:border-[#22C55E] transition-all">
-              <div className="text-4xl sm:text-5xl font-bold text-[#22C55E] font-display-1">100%</div>
-              <div className="text-xs font-semibold text-[#6B7280] mt-2 uppercase tracking-wider">Kontribusi Tervalidasi SHA-256</div>
-              <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#22C55E]" />
-            </div>
-          </div>
-
-          {/* Services Section */}
-          <div className="text-center mb-8">
-            <h3 className="font-heading-3 text-xl font-bold text-[#111827]">
-              Fokus Layanan &amp; Kolaborasi
-            </h3>
-          </div>
-
-          {/* Service Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            {/* Card 1 */}
-            <div 
-              onClick={() => setActiveTab('matchmaking')}
-              className="bg-white border border-[#E5E7EB] rounded-[20px] p-6 shadow-sm hover:translate-y-[-2px] hover:border-[#22C55E] transition-all cursor-pointer flex flex-col justify-between h-52 text-[#111827] group"
-            >
-              <div className="flex justify-between items-start">
-                <span className="bg-[#F3F4F6] text-[#111827] font-semibold text-[11px] px-3 py-1 rounded-full border border-[#E5E7EB]">
-                  Tim Proyek &amp; PKM
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-mono-tech font-bold badge-primary">
+                  94% FIT
                 </span>
-                <div className="w-10 h-10 bg-[#ecfdf5] rounded-xl flex items-center justify-center text-[#22C55E] group-hover:bg-[#22C55E] group-hover:text-white transition-colors">
-                  <PixelRobot className="w-5 h-5" />
-                </div>
               </div>
-              <div>
-                <h4 className="font-bold text-lg text-[#111827] mb-1">Tech Startups &amp; Kompetisi</h4>
-                <p className="text-xs text-[#6B7280] leading-relaxed">Matchmaking skill akurat &amp; komitmen jam per minggu yang transparan.</p>
+
+              {/* Bottom decorative bar */}
+              <div className="mt-4 pt-3 border-t theme-border-subtle flex items-center justify-between text-[10px] font-mono-tech theme-text-muted">
+                <span>VERSTACK CRYPTO PROOF</span>
+                <span className="primary-text">SHA256: 7f83b1...9a4c</span>
               </div>
             </div>
-
-            {/* Card 2 */}
-            <div 
-              onClick={() => setActiveTab('umkm')}
-              className="bg-white border border-[#E5E7EB] rounded-[20px] p-6 shadow-sm hover:translate-y-[-2px] hover:border-[#4F46E5] transition-all cursor-pointer flex flex-col justify-between h-52 text-[#111827] group"
-            >
-              <div className="flex justify-between items-start">
-                <span className="bg-[#e0e7ff] text-[#4338ca] font-semibold text-[11px] px-3 py-1 rounded-full border border-[#c7d2fe]">
-                  SDG 8 · Decent Work
-                </span>
-                <div className="w-10 h-10 bg-[#e0e7ff] rounded-xl flex items-center justify-center text-[#4F46E5] group-hover:bg-[#4F46E5] group-hover:text-white transition-colors">
-                  <PixelTrophy className="w-5 h-5" />
-                </div>
-              </div>
-              <div>
-                <h4 className="font-bold text-lg text-[#111827] mb-1">Digitalisasi UMKM Lokal</h4>
-                <p className="text-xs text-[#6B7280] leading-relaxed">Kemitraan pengembangan sistem informasi usaha &amp; e-commerce rintisan.</p>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div 
-              onClick={() => setActiveTab('workspace')}
-              className="bg-white border border-[#E5E7EB] rounded-[20px] p-6 shadow-sm hover:translate-y-[-2px] hover:border-[#22C55E] transition-all cursor-pointer flex flex-col justify-between h-52 text-[#111827] group"
-            >
-              <div className="flex justify-between items-start">
-                <span className="bg-[#ecfdf5] text-[#166534] font-semibold text-[11px] px-3 py-1 rounded-full border border-[#a7f3d0]">
-                  Audit Trail
-                </span>
-                <div className="w-10 h-10 bg-[#ecfdf5] rounded-xl flex items-center justify-center text-[#22C55E] group-hover:bg-[#22C55E] group-hover:text-white transition-colors">
-                  <PixelShield className="w-5 h-5" />
-                </div>
-              </div>
-              <div>
-                <h4 className="font-bold text-lg text-[#111827] mb-1">Evaluasi Sejawat 360°</h4>
-                <p className="text-xs text-[#6B7280] leading-relaxed">Pencegahan perilaku free-rider dengan sistem flagging otomatis.</p>
-              </div>
-            </div>
-
           </div>
 
         </div>

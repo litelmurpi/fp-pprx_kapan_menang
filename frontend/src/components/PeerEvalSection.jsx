@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, QrCode, Sliders, ShieldCheck, Lock, Star, AlertTriangle } from 'lucide-react';
+import { Copy, Check, QrCode, Sliders, ShieldCheck, Lock, Star, AlertTriangle, Fingerprint } from 'lucide-react';
 import { PixelShield, PixelLock, PixelStar, PixelAlert, PixelCheck } from './PixelIcons';
 import { mockPortfolio, testAccounts } from '../data/mockData';
 
@@ -29,9 +29,9 @@ const PeerEvalSection = ({ currentUser }) => {
   };
 
   const dimensions = [
-    { key: 'quality', label: 'Kualitas Deliverables' },
-    { key: 'timeliness', label: 'Ketepatan Waktu' },
-    { key: 'teamwork', label: 'Kerja Sama & Kolaborasi' },
+    { key: 'quality', label: 'Kualitas Deliverables & Kode' },
+    { key: 'timeliness', label: 'Ketepatan Waktu Delivery' },
+    { key: 'teamwork', label: 'Kerja Sama & Kolaborasi Tim' },
     { key: 'communication', label: 'Komunikasi & Responsivitas' },
   ];
 
@@ -39,157 +39,170 @@ const PeerEvalSection = ({ currentUser }) => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6 border-b border-[#E5E7EB]">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6 border-b theme-border">
         <div>
-          <div className="inline-flex items-center gap-2 mb-3 bg-[#e0e7ff] border border-[#c7d2fe] text-[#4338ca] px-3 py-1 rounded-full text-xs font-semibold">
-            <PixelShield className="w-4 h-4 text-[#4F46E5]" />
-            <span>Evaluasi Sejawat 360° &amp; Portofolio SHA-256</span>
+          <div className="inline-flex items-center gap-2 mb-3 badge-secondary px-3.5 py-1 rounded-full text-xs font-semibold">
+            <Fingerprint className="w-4 h-4 secondary-text" />
+            <span>Evaluasi Sejawat 360° &amp; Kredensial SHA-256</span>
           </div>
-          <h1 className="font-heading-2 text-3xl sm:text-4xl font-bold text-[#111827]">Evaluasi 360° &amp; Portofolio</h1>
-          <p className="text-sm text-[#6B7280] mt-1.5">
-            Sistem penilaian obyektif antar rekan tim. Menerbitkan portofolio kriptografis yang tamper-proof.
+          <h1 className="font-heading text-3xl sm:text-4xl font-bold theme-text">Evaluasi 360° &amp; Portofolio</h1>
+          <p className="text-sm theme-text-sub mt-1.5">
+            Sistem penilaian obyektif antar rekan tim Verstack. Menerbitkan portofolio kriptografis yang tamper-proof.
           </p>
-        </div>
-        <div className="flex items-center gap-2 border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs bg-[#FAFAFA] font-medium text-[#111827]">
-          <Lock className="w-4 h-4 text-[#22C55E]" />
-          <span>SHA-256 Immutable Proof</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Evaluation form */}
-        <div>
-          <div className="border border-[#E5E7EB] rounded-[20px] p-6 bg-white shadow-sm">
-            <div className="flex items-center justify-between mb-5 pb-4 border-b border-[#E5E7EB]">
-              <h3 className="font-bold text-[#111827] text-lg flex items-center gap-2">
-                <Sliders className="w-5 h-5 text-[#4F46E5]" /> Evaluasi Sejawat Tim
-              </h3>
-              <span className="text-xs font-semibold text-[#166534] bg-[#ecfdf5] border border-[#a7f3d0] px-3 py-1 rounded-full">Sprint 4 Review</span>
+        {/* Left: 360 Peer Evaluation Form */}
+        <div className="lg:col-span-7 space-y-6">
+          <div className="theme-card rounded-[16px] p-6 relative overflow-hidden border-t-2 primary-border">
+            
+            <div className="flex items-center justify-between pb-4 mb-5 border-b theme-border-subtle">
+              <span className="font-heading text-base font-bold theme-text flex items-center gap-2">
+                <Sliders className="w-4 h-4 secondary-text" /> Form Evaluasi Akhir Sprint
+              </span>
+              <span className="text-xs font-mono-tech theme-text-muted">Proyek: E-Commerce Kasir</span>
             </div>
 
             {/* Teammate selector */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              {testAccounts.filter(a => a.id !== currentUser.id).slice(0, 4).map(acc => {
-                const sel = selectedTeammate.id === acc.id;
-                const flagged = acc.name.includes('Eko');
-                return (
-                  <button key={acc.id} onClick={() => handleTeammateChange(acc)}
-                    className={`p-3.5 rounded-xl border text-left text-xs transition-all cursor-pointer flex items-center gap-3 ${
-                      sel ? 'bg-[#111827] text-white border-[#111827] shadow-xs' : 'bg-[#FAFAFA] text-[#111827] border-[#E5E7EB] hover:border-[#9CA3AF]'
-                    }`}>
-                    <img src={acc.avatar} alt={acc.name} className="w-8 h-8 rounded-full border border-[#E5E7EB] bg-white shrink-0" />
-                    <div className="min-w-0">
-                      <p className="font-semibold truncate">{acc.name}</p>
-                      <p className={`text-[11px] font-medium truncate ${sel ? 'text-gray-300' : flagged ? 'text-red-500 font-semibold' : 'text-[#22C55E]'}`}>
-                        {flagged ? '⚠ Flagged (Free-rider)' : '★ Kontributor Aktif'}
-                      </p>
-                    </div>
+            <div className="mb-6">
+              <label className="block text-xs font-medium theme-text-sub mb-2 uppercase tracking-wider">Pilih Rekan Tim yang Dinilai</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {[testAccounts[4], testAccounts[1], testAccounts[2]].map(member => (
+                  <button
+                    key={member.id}
+                    onClick={() => handleTeammateChange(member)}
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      selectedTeammate.id === member.id
+                        ? 'primary-bg/15 primary-border theme-text font-semibold shadow-sm'
+                        : 'bg-white/5 border theme-border theme-text-sub hover:theme-text'
+                    }`}
+                  >
+                    <p className="text-xs truncate">{member.name}</p>
+                    <p className="text-[10px] theme-text-muted mt-0.5 truncate">{member.role}</p>
                   </button>
-                );
-              })}
+                ))}
+              </div>
             </div>
 
-            {/* Sliders */}
-            <div className="space-y-4 bg-[#FAFAFA] rounded-xl p-5 border border-[#E5E7EB]">
-              <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
-                <span className="text-xs font-semibold text-[#111827]">Menilai Rekan: <strong className="text-[#4F46E5]">{selectedTeammate.name}</strong></span>
-                <span className={`text-xs font-bold px-3 py-1 rounded-full border flex items-center gap-1.5 ${
-                  isSuspicious ? 'bg-red-50 text-red-700 border-red-200' : 'bg-[#ecfdf5] text-[#166534] border-[#a7f3d0]'
-                }`}>
-                  <Star className="w-3.5 h-3.5 fill-current" /> {avgScore} / 5.0
+            {/* Evaluation Sliders */}
+            <div className="space-y-5 bg-white/5 p-5 rounded-xl border theme-border">
+              {dimensions.map(dim => (
+                <div key={dim.key}>
+                  <div className="flex justify-between text-xs font-medium theme-text mb-2">
+                    <span>{dim.label}</span>
+                    <span className="font-mono-tech font-bold secondary-text">{scores[dim.key]} / 5.0</span>
+                  </div>
+                  <input
+                    type="range" min="1.0" max="5.0" step="0.1" value={scores[dim.key]}
+                    onChange={(e) => setScores({...scores, [dim.key]: parseFloat(e.target.value)})}
+                    className="w-full accent-[var(--color-primary)] cursor-pointer h-2 bg-white/10 rounded-lg"
+                  />
+                  <div className="flex justify-between text-[10px] theme-text-muted font-mono-tech mt-1">
+                    <span>1.0 (Buruk)</span><span>3.0 (Cukup)</span><span>5.0 (Ekselen)</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Average Score Box */}
+            <div className="mt-6 pt-5 border-t theme-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span className="text-xs theme-text-sub block">Skor Rata-rata Evaluasi Sejawat:</span>
+                <span className={`text-2xl font-bold font-mono-tech ${isSuspicious ? 'text-amber-500' : 'primary-text'}`}>
+                  {avgScore} / 5.0
                 </span>
               </div>
 
-              {dimensions.map(d => (
-                <div key={d.key}>
-                  <div className="flex justify-between text-xs font-medium text-[#4B5563] mb-1.5">
-                    <span>{d.label}</span>
-                    <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-[#E5E7EB] text-[#111827]">{scores[d.key]}</span>
-                  </div>
-                  <input type="range" min="1.0" max="5.0" step="0.1" value={scores[d.key]}
-                    onChange={(e) => setScores({...scores, [d.key]: parseFloat(e.target.value)})}
-                    className="w-full accent-[#4F46E5] cursor-pointer h-2 bg-[#E5E7EB] rounded-lg" />
-                </div>
-              ))}
-
               {isSuspicious && (
-                <div className="p-3.5 border border-red-200 rounded-xl bg-red-50 text-xs flex items-start gap-2.5">
-                  <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-bold text-red-900">Variance Alert Terpicu!</p>
-                    <p className="text-red-700 mt-0.5">Skor evaluasi &lt;3.2 — sistem AI akan mengkroscek dengan bukti rekam jejak checkpoint.</p>
-                  </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 px-3.5 py-2 rounded-xl">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>Variance Alert (&lt;3.2): Memerlukan verifikasi Dosen</span>
                 </div>
               )}
-
-              <button onClick={() => setEvalSubmitted(true)} disabled={evalSubmitted}
-                className={`w-full py-3.5 rounded-xl font-semibold text-xs transition-all cursor-pointer shadow-xs ${
-                  evalSubmitted ? 'bg-[#ecfdf5] text-[#166534] border border-[#a7f3d0]' : 'bg-[#4F46E5] text-white hover:bg-[#4338ca]'
-                }`}>
-                {evalSubmitted ? (
-                  <span className="flex items-center justify-center gap-2"><Check className="w-4 h-4 text-[#22C55E]" /> Evaluasi Tersimpan &amp; Terenkripsi</span>
-                ) : (
-                  <span className="flex items-center justify-center gap-2">Kirim Evaluasi 360° <ShieldCheck className="w-4 h-4" /></span>
-                )}
-              </button>
             </div>
+
+            {/* Submit button */}
+            <div className="mt-6">
+              {evalSubmitted ? (
+                <div className="p-3.5 badge-primary rounded-xl text-xs font-semibold text-center flex items-center justify-center gap-2">
+                  <Check className="w-4 h-4 primary-text" /> Nilai evaluasi berhasil direkam di Audit Trail!
+                </div>
+              ) : (
+                <button
+                  onClick={() => setEvalSubmitted(true)}
+                  className="w-full btn-primary font-semibold text-xs py-3.5 rounded-lg cursor-pointer shadow-md"
+                >
+                  Kirim Evaluasi Sejawat Kriptografis
+                </button>
+              )}
+            </div>
+
           </div>
         </div>
 
-        {/* Certificate */}
-        <div>
-          <div className="border border-[#E5E7EB] rounded-[20px] p-6 relative overflow-hidden bg-white shadow-sm">
-            <div className="absolute top-4 right-4 opacity-5 pointer-events-none">
-              <ShieldCheck className="w-36 h-36 text-[#4F46E5]" />
-            </div>
-
-            <div className="flex items-start justify-between mb-6 relative z-10">
+        {/* Right: Verified Portfolio Card (Apple Wallet / Linear style) */}
+        <div className="lg:col-span-5 space-y-6">
+          <div className="theme-card rounded-[20px] p-6 relative overflow-hidden shadow-2xl border-t-2 primary-border">
+            
+            <div className="flex items-start justify-between mb-6">
               <div>
-                <span className="text-[11px] font-semibold text-[#166534] bg-[#ecfdf5] border border-[#a7f3d0] px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-xs">
-                  <Lock className="w-3.5 h-3.5 text-[#22C55E]" /> Verified Academic Credential
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono-tech font-bold badge-primary inline-flex items-center gap-1 mb-2">
+                  <ShieldCheck className="w-3.5 h-3.5 primary-text" /> VERIFIED BY VERSTACK PROTOCOL
                 </span>
-                <h3 className="text-xl font-bold text-[#111827] mt-3">{mockPortfolio.studentName}</h3>
-                <p className="text-xs text-[#6B7280]">{mockPortfolio.university} · NIM: {mockPortfolio.nim}</p>
+                <h3 className="font-heading text-lg font-bold theme-text">{mockPortfolio.studentName}</h3>
+                <p className="text-xs theme-text-sub font-mono-tech">{mockPortfolio.university} · {mockPortfolio.prodi}</p>
               </div>
-              <div className="w-14 h-14 border border-[#E5E7EB] rounded-2xl flex items-center justify-center bg-[#FAFAFA] shadow-xs shrink-0">
-                <QrCode className="w-8 h-8 text-[#111827]" />
-              </div>
-            </div>
-
-            <div className="space-y-4 relative z-10">
-              <div className="p-4 bg-[#FAFAFA] rounded-xl border border-[#E5E7EB]">
-                <span className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider block">Proyek Final Project / Kemitraan</span>
-                <p className="text-base font-bold text-[#111827] mt-1">{mockPortfolio.projectTitle}</p>
-                <div className="flex items-center gap-3 mt-3 text-xs">
-                  <span className="px-3 py-1 bg-[#22C55E] text-white font-semibold rounded-full shadow-xs">★ {mockPortfolio.peerScore} / 5.0 Peer Score</span>
-                  <span className="text-[#4B5563] font-medium border border-[#E5E7EB] bg-white px-3 py-1 rounded-full">{mockPortfolio.role}</span>
-                </div>
-              </div>
-
-              {/* Hash box */}
-              <div className="p-5 bg-[#111827] rounded-xl border border-[#374151] text-white shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] text-[#22C55E] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <PixelShield className="w-3.5 h-3.5 text-[#22C55E]" /> SHA-256 Kriptografis Hash
-                  </span>
-                  <span className="text-[10px] bg-[#22C55E]/20 text-[#22C55E] px-2.5 py-0.5 rounded-full font-semibold border border-[#22C55E]/30">
-                    Tamper-Proof
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2 bg-white/5 p-3 rounded-xl text-[11px] text-gray-300 border border-white/10 font-mono">
-                  <span className="truncate">{mockPortfolio.verificationHash}</span>
-                  <button onClick={handleCopyHash} className="p-1.5 rounded-lg bg-[#22C55E] text-white hover:bg-[#16a34a] transition-colors shrink-0 cursor-pointer shadow-xs">
-                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
+              <div className="p-2 bg-white rounded-xl shadow-xs shrink-0">
+                <QrCode className="w-10 h-10 text-black" />
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-[#E5E7EB] flex items-center justify-between text-xs text-[#6B7280] relative z-10">
-              <span>Diterbitkan: {mockPortfolio.issuedDate}</span>
-              <a href="#" className="text-[#111827] bg-[#F3F4F6] px-3 py-1 rounded-full border border-[#E5E7EB] font-medium hover:bg-[#E5E7EB] transition-colors">Verifikasi di Explorer ↗</a>
+            <div className="space-y-4 bg-white/5 p-4 rounded-xl border theme-border mb-6">
+              <div className="flex justify-between text-xs">
+                <span className="theme-text-muted">Proyek Kelulusan:</span>
+                <span className="font-semibold theme-text text-right">{mockPortfolio.projectTitle}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="theme-text-muted">Peran Tim:</span>
+                <span className="font-semibold secondary-text">{mockPortfolio.role}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="theme-text-muted">Final Evaluation Score:</span>
+                <span className="font-mono-tech font-bold primary-text">{mockPortfolio.finalScore}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="theme-text-muted">Total Jam Kontribusi:</span>
+                <span className="font-mono-tech font-semibold theme-text">{mockPortfolio.hoursLogged} jam</span>
+              </div>
             </div>
+
+            {/* SHA-256 Crypto Hash Box per DESIGN.md Section 5.C */}
+            <div>
+              <label className="block text-[11px] font-semibold theme-text-muted uppercase tracking-wider mb-1.5 font-mono-tech">
+                SHA-256 Cryptographic Proof Hash:
+              </label>
+              <div className="bg-[#08090A] border border-[#374151] rounded-xl p-3 flex items-center justify-between gap-2 shadow-inner">
+                <code className="font-mono-tech text-[11px] primary-text truncate block w-full">
+                  {mockPortfolio.verificationHash}
+                </code>
+                <button
+                  onClick={handleCopyHash}
+                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white shrink-0 transition-colors cursor-pointer"
+                  title="Salin Hash"
+                >
+                  {copied ? <Check className="w-4 h-4 primary-text" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+              {copied && <p className="text-[11px] primary-text font-mono-tech mt-1.5">✓ String hash disalin ke clipboard</p>}
+            </div>
+
+            <div className="mt-6 pt-4 border-t theme-border-subtle flex items-center justify-between text-[11px] font-mono-tech theme-text-muted">
+              <span>IMMUTABLE LEDGER RECORD</span>
+              <span className="secondary-text">VERSTACK v2.0</span>
+            </div>
+
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Clock, ArrowRight, PlusCircle, ChevronRight, X, SlidersHorizontal, Check } from 'lucide-react';
+import { Search, Clock, ArrowRight, PlusCircle, ChevronRight, X, SlidersHorizontal, Check, Sparkles } from 'lucide-react';
 import { PixelSparkle, PixelCheck, PixelStar, PixelRobot } from './PixelIcons';
 import { mockProjects } from '../data/mockData';
 
@@ -34,7 +34,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab }) => {
   const handleCreateProject = (e) => {
     e.preventDefault();
     setShowCreateModal(false);
-    setSuccessMsg('Proyek baru berhasil dipublikasikan!');
+    setSuccessMsg('Proyek baru berhasil dipublikasikan ke jaringan Verstack!');
     setTimeout(() => setSuccessMsg(''), 2500);
   };
 
@@ -42,102 +42,137 @@ const MatchmakingSection = ({ currentUser, setActiveTab }) => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6 border-b border-[#E5E7EB]">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6 border-b theme-border">
         <div>
-          <div className="inline-flex items-center gap-2 mb-3 bg-[#ecfdf5] border border-[#a7f3d0] text-[#166534] px-3 py-1 rounded-full text-xs font-semibold">
-            <PixelSparkle className="w-4 h-4 text-[#22C55E]" />
-            <span>AI Weighted Matchmaking</span>
+          <div className="inline-flex items-center gap-2 mb-3 badge-secondary px-3.5 py-1 rounded-full text-xs font-semibold">
+            <Sparkles className="w-4 h-4 secondary-text" />
+            <span>AI Weighted Skill Matchmaking</span>
           </div>
-          <h1 className="font-heading-2 text-3xl sm:text-4xl font-bold text-[#111827]">Cari Tim &amp; Proyek Kolaborasi</h1>
-          <p className="text-sm text-[#6B7280] mt-1.5">
-            Keahlian kamu: <span className="font-medium text-[#111827] bg-[#F3F4F6] px-2 py-0.5 rounded border border-[#E5E7EB]">{currentUser.skills?.join(', ')}</span> · Ketersediaan: <strong className="text-[#22C55E]">{currentUser.freeHours} jam/mgg</strong>
+          <h1 className="font-heading text-3xl sm:text-4xl font-bold theme-text">Cari Tim &amp; Proyek Kolaborasi</h1>
+          <p className="text-sm theme-text-sub mt-1.5">
+            Keahlian kamu: <span className="font-medium theme-text bg-white/5 px-2.5 py-0.5 rounded border theme-border">{currentUser.skills?.join(', ')}</span> · Ketersediaan: <strong className="primary-text font-mono-tech">{currentUser.freeHours} jam/mgg</strong>
           </p>
         </div>
         <button 
           onClick={() => setShowCreateModal(true)} 
-          className="bg-[#22C55E] text-white text-xs font-semibold px-5 py-3 rounded-xl hover:bg-[#16a34a] transition-all cursor-pointer inline-flex items-center gap-2 border border-[#16a34a] shadow-sm hover:translate-y-[-1px]"
+          className="btn-primary text-xs px-5 py-3 rounded-lg inline-flex items-center gap-2 cursor-pointer shadow-sm"
         >
           <PlusCircle className="w-4 h-4" /> Buat Proyek Baru
         </button>
       </div>
 
       {successMsg && (
-        <div className="mb-6 p-4 border border-[#a7f3d0] rounded-xl bg-[#ecfdf5] text-[#166534] text-xs font-medium flex items-center gap-2 shadow-xs">
-          <Check className="w-4 h-4 text-[#22C55E]" /> {successMsg}
+        <div className="mb-6 p-4 badge-primary rounded-xl text-xs font-medium flex items-center gap-2 shadow-xs">
+          <Check className="w-4 h-4" /> {successMsg}
         </div>
       )}
 
-      {/* Filters */}
-      <div className="mb-10 space-y-4">
-        <div className="relative">
-          <Search className="w-5 h-5 text-[#9CA3AF] absolute left-4 top-3.5" />
-          <input 
-            type="text" placeholder="Cari proyek berdasarkan judul atau deskripsi..." value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full border border-[#E5E7EB] rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:border-[#22C55E] focus:ring-3 focus:ring-[#22C55E]/10 transition-all bg-[#FAFAFA] text-[#111827]"
-          />
-        </div>
-        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+      {/* Filters & Search Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        
+        {/* Category pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
           {categories.map(cat => (
-            <button key={cat} onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all cursor-pointer border ${
-                selectedCategory === cat 
-                  ? 'bg-[#111827] text-white border-[#111827] shadow-xs' 
-                  : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:text-[#111827] hover:bg-[#FAFAFA]'
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
+                selectedCategory === cat
+                  ? 'primary-bg text-[#0A0A0A] font-semibold shadow-sm'
+                  : 'theme-text-sub hover:theme-text bg-white/5 hover:bg-white/10 border theme-border'
               }`}
-            >{cat}</button>
+            >
+              {cat}
+            </button>
           ))}
+        </div>
+
+        {/* Search Bar with Shortcut Badge */}
+        <div className="relative w-full md:w-72">
+          <Search className="w-4 h-4 theme-text-muted absolute left-3.5 top-3" />
+          <input 
+            type="text" 
+            placeholder="Cari keahlian atau proyek..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-white/5 dark:bg-white/5 theme-text placeholder:theme-text-muted text-xs font-medium pl-10 pr-12 py-2.5 rounded-lg border theme-border focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:outline-none transition-all"
+          />
+          <kbd className="absolute right-3 top-2.5 bg-white/5 border theme-border rounded px-1.5 py-0.5 font-mono-tech text-[10px] theme-text-muted">⌘K</kbd>
         </div>
       </div>
 
-      {/* Cards grid */}
+      {/* Project Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProjects.map(project => {
           const isJoined = joinedProjects.includes(project.id);
-          const hasSkill = project.requiredSkills.some(s => currentUser.skills?.includes(s));
+          const isHighMatch = project.matchScore >= 88;
           return (
-            <div key={project.id} className="border border-[#E5E7EB] rounded-[20px] p-6 flex flex-col justify-between hover:translate-y-[-2px] hover:border-[#22C55E] transition-all bg-white shadow-sm group">
+            <div 
+              key={project.id} 
+              className="theme-card rounded-[16px] p-6 flex flex-col justify-between group relative overflow-hidden"
+            >
+              {isHighMatch && (
+                <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent opacity-80" />
+              )}
+
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[11px] font-medium text-[#4B5563] border border-[#E5E7EB] px-2.5 py-1 rounded-full bg-[#FAFAFA]">{project.category}</span>
-                  {project.isUmkm && <span className="text-[11px] font-semibold text-[#166534] bg-[#ecfdf5] px-2.5 py-1 rounded-full border border-[#a7f3d0]">SDG 8 · UMKM</span>}
-                </div>
-                <h3 className="font-bold text-lg text-[#111827] mb-2 group-hover:text-[#22C55E] transition-colors">{project.title}</h3>
-                <p className="text-xs text-[#6B7280] leading-relaxed mb-5">{project.description}</p>
-
-                <div className="flex items-center gap-4 text-xs font-medium text-[#6B7280] mb-5 pb-3 border-b border-[#E5E7EB]">
-                  <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-[#9CA3AF]" /> {project.commitmentHours} jam/mgg</span>
-                  <span className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[11px] font-medium ${hasSkill ? 'bg-[#ecfdf5] text-[#166534] border-[#a7f3d0]' : 'bg-[#FAFAFA] text-[#6B7280] border-[#E5E7EB]'}`}>
-                    <PixelStar className="w-3 h-3" /> {hasSkill ? '94% Match' : 'Partial Fit'}
+                  <span className="text-[11px] font-semibold theme-text-sub bg-white/5 border theme-border px-2.5 py-1 rounded-md">
+                    {project.category}
+                  </span>
+                  <span className={`text-[11px] font-mono-tech font-bold px-2.5 py-1 rounded-full border inline-flex items-center gap-1 ${
+                    isHighMatch 
+                      ? 'badge-primary' 
+                      : 'bg-amber-500/15 text-amber-500 border-amber-500/30'
+                  }`}>
+                    <Sparkles className="w-3 h-3" />
+                    {project.matchScore}% FIT
                   </span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                  {project.requiredSkills.map((sk, i) => {
-                    const matched = currentUser.skills?.includes(sk);
-                    return (
-                      <span key={i} className={`text-[11px] font-medium px-2.5 py-1 rounded-full border ${
-                        matched ? 'bg-[#e0e7ff] text-[#4338ca] border-[#c7d2fe] font-semibold' : 'bg-[#FAFAFA] text-[#6B7280] border-[#E5E7EB]'
-                      }`}>{matched && '✓ '}{sk}</span>
-                    );
-                  })}
+                <h3 className="font-heading text-lg font-bold theme-text mb-2 group-hover:primary-text transition-colors">
+                  {project.title}
+                </h3>
+                <p className="text-xs theme-text-sub mb-5 line-clamp-3 leading-relaxed">
+                  {project.description}
+                </p>
+
+                <div className="space-y-3 mb-6">
+                  <div>
+                    <span className="text-[11px] font-medium theme-text-muted block mb-1.5 uppercase tracking-wider">Required Skills</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {project.requiredSkills.map((skill, index) => (
+                        <span key={index} className="text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-white/5 border theme-border theme-text-sub">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E5E7EB] flex items-center justify-between">
-                <span className="text-xs font-medium text-[#6B7280]">{project.slotsLeft > 0 ? `${project.slotsLeft} slot tersedia` : 'Penuh'}</span>
+              <div className="pt-4 border-t theme-border-subtle flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs theme-text-muted font-mono-tech">
+                  <Clock className="w-3.5 h-3.5 secondary-text" />
+                  <span>{project.commitmentHours} jam/mgg</span>
+                </div>
+
                 {isJoined ? (
-                  <button onClick={() => setActiveTab('workspace')} className="text-xs font-semibold text-[#111827] bg-[#F3F4F6] px-4 py-2 rounded-xl border border-[#E5E7EB] flex items-center gap-1 cursor-pointer hover:bg-[#E5E7EB] transition-colors">
-                    Ruang Kerja <ChevronRight className="w-4 h-4" />
-                  </button>
+                  <span className="text-xs font-semibold px-3.5 py-2 rounded-lg badge-primary inline-flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Tergabung
+                  </span>
                 ) : (
-                  <button onClick={() => handleJoinProject(project.id)} disabled={project.slotsLeft === 0}
-                    className={`text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer transition-all ${
-                      project.slotsLeft === 0 
-                        ? 'bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed border border-[#E5E7EB]' 
-                        : 'bg-[#22C55E] text-white border border-[#16a34a] shadow-xs hover:bg-[#16a34a] hover:translate-y-[-1px]'
-                    }`}>
-                    Gabung Tim <ArrowRight className="w-3.5 h-3.5" />
+                  <button 
+                    onClick={() => handleJoinProject(project.id)}
+                    disabled={project.slotsLeft === 0}
+                    className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-xs ${
+                      project.slotsLeft === 0
+                        ? 'bg-white/5 theme-text-muted border theme-border cursor-not-allowed'
+                        : 'btn-primary'
+                    }`}
+                  >
+                    <span>Gabung Tim</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
@@ -146,49 +181,47 @@ const MatchmakingSection = ({ currentUser, setActiveTab }) => {
         })}
       </div>
 
-      {/* Create modal */}
+      {/* Create Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white rounded-[20px] max-w-lg w-full p-6 relative border border-[#E5E7EB] shadow-lg">
-            <button onClick={() => setShowCreateModal(false)} className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-[#F3F4F6] text-[#6B7280] cursor-pointer"><X className="w-5 h-5" /></button>
-            <h2 className="font-heading-3 text-xl font-bold text-[#111827] mb-1 flex items-center gap-2">
-              <PixelRobot className="w-5 h-5 text-[#22C55E]" /> Buat Proyek Baru
-            </h2>
-            <p className="text-xs text-[#6B7280] mb-6">Publikasikan proyek tantangan agar tim mahasiswa terkurasi dapat bergabung.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="theme-card bg-[#141519] dark:bg-[#141519] rounded-[20px] max-w-lg w-full p-6 relative shadow-2xl border-t-2 primary-border">
+            <button onClick={() => setShowCreateModal(false)} className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-white/10 theme-text-sub cursor-pointer"><X className="w-5 h-5" /></button>
+            <h2 className="font-heading text-xl font-bold theme-text mb-1 flex items-center gap-2"><PlusCircle className="w-5 h-5 secondary-text" /> Buat Proyek Baru</h2>
+            <p className="text-xs theme-text-sub mb-6">Publikasikan ide kolaborasi ke jaringan verifikasi Verstack.</p>
             
             <form onSubmit={handleCreateProject} className="space-y-4 text-left">
               <div>
-                <label className="block text-xs font-semibold text-[#111827] mb-1.5">Judul Proyek</label>
+                <label className="block text-xs font-medium theme-text mb-1.5">Judul Proyek</label>
                 <input type="text" required value={newProject.title} onChange={(e) => setNewProject({...newProject, title: e.target.value})}
-                  className="w-full border border-[#E5E7EB] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#22C55E] bg-[#FAFAFA]" placeholder="Misal: Sistem Kasir Berbasis AI" />
+                  className="w-full bg-white/5 border theme-border rounded-lg px-3.5 py-2.5 text-xs theme-text focus:outline-none focus:border-[var(--color-primary)]" placeholder="Sistem Informasi Kasir UMKM" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#111827] mb-1.5">Kategori</label>
+                  <label className="block text-xs font-medium theme-text mb-1.5">Kategori Bidang</label>
                   <select value={newProject.category} onChange={(e) => setNewProject({...newProject, category: e.target.value})}
-                    className="w-full border border-[#E5E7EB] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#22C55E] bg-[#FAFAFA]">
-                    {categories.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
+                    className="w-full bg-[#141519] border theme-border rounded-lg px-3.5 py-2.5 text-xs theme-text focus:outline-none focus:border-[var(--color-primary)]">
+                    {categories.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#111827] mb-1.5">Komitmen Jam/Mgg</label>
-                  <input type="number" required min="4" max="40" value={newProject.commitmentHours} onChange={(e) => setNewProject({...newProject, commitmentHours: parseInt(e.target.value) || 10})}
-                    className="w-full border border-[#E5E7EB] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#22C55E] bg-[#FAFAFA]" />
+                  <label className="block text-xs font-medium theme-text mb-1.5">Waktu / Minggu (Jam)</label>
+                  <input type="number" required min="4" max="40" value={newProject.commitmentHours} onChange={(e) => setNewProject({...newProject, commitmentHours: parseInt(e.target.value)})}
+                    className="w-full bg-white/5 border theme-border rounded-lg px-3.5 py-2.5 text-xs font-mono-tech theme-text focus:outline-none focus:border-[var(--color-primary)]" />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#111827] mb-1.5">Deskripsi Proyek</label>
-                <textarea rows="3" required value={newProject.description} onChange={(e) => setNewProject({...newProject, description: e.target.value})}
-                  className="w-full border border-[#E5E7EB] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#22C55E] bg-[#FAFAFA]" placeholder="Jelaskan ruang lingkup masalah dan ekspektasi deliverables..." />
+                <label className="block text-xs font-medium theme-text mb-1.5">Keahlian yang Dibutuhkan</label>
+                <input type="text" required value={newProject.requiredSkills} onChange={(e) => setNewProject({...newProject, requiredSkills: e.target.value})}
+                  className="w-full bg-white/5 border theme-border rounded-lg px-3.5 py-2.5 text-xs theme-text focus:outline-none focus:border-[var(--color-primary)]" placeholder="React, Laravel, Tailwind CSS" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#111827] mb-1.5">Keahlian Dibutuhkan (Pisahkan Koma)</label>
-                <input type="text" required value={newProject.requiredSkills} onChange={(e) => setNewProject({...newProject, requiredSkills: e.target.value})}
-                  className="w-full border border-[#E5E7EB] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#22C55E] bg-[#FAFAFA]" placeholder="React, Laravel, Figma, Node.js" />
+                <label className="block text-xs font-medium theme-text mb-1.5">Deskripsi Singkat &amp; Objective</label>
+                <textarea rows="3" required value={newProject.description} onChange={(e) => setNewProject({...newProject, description: e.target.value})}
+                  className="w-full bg-white/5 border theme-border rounded-lg px-3.5 py-2.5 text-xs theme-text focus:outline-none focus:border-[var(--color-primary)]" placeholder="Jelaskan masalah apa yang diselesaikan proyek ini..." />
               </div>
-              <div className="pt-4 flex justify-end gap-3 border-t border-[#E5E7EB]">
-                <button type="button" onClick={() => setShowCreateModal(false)} className="text-xs font-medium text-[#6B7280] px-5 py-2.5 rounded-xl hover:bg-[#FAFAFA] cursor-pointer">Batal</button>
-                <button type="submit" className="text-xs font-semibold text-white bg-[#22C55E] px-6 py-2.5 rounded-xl hover:bg-[#16a34a] transition-colors cursor-pointer shadow-xs">Publikasikan Proyek</button>
+              <div className="pt-4 flex justify-end gap-3 border-t theme-border-subtle">
+                <button type="button" onClick={() => setShowCreateModal(false)} className="btn-secondary text-xs px-5 py-2.5 rounded-lg cursor-pointer">Batal</button>
+                <button type="submit" className="btn-primary text-xs px-6 py-2.5 rounded-lg cursor-pointer">Publikasikan Proyek</button>
               </div>
             </form>
           </div>

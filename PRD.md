@@ -139,18 +139,30 @@ Tech stack mengikuti ketentuan wajib final project: backend PHP/Laravel dengan M
    → Termasuk proyek UMKM simulasi yang sudah di-approve PIC
         ↓
 3. Sistem menjalankan matchmaking
-   → Mencocokkan skill mahasiswa dengan kebutuhan proyek
+   → Menampilkan daftar terurut skor kecocokan (mahasiswa untuk proyek,
+     atau proyek untuk mahasiswa) — bersifat REKOMENDASI, bukan penempatan otomatis
         ↓
-4. Tim terbentuk, proyek berjalan dengan checkpoint berkala
+4. Proses bergabung ke tim (dua arah, keduanya berakhir dengan konfirmasi):
+   a. Mahasiswa MENGAJUKAN DIRI ke proyek yang dicari
+      → status anggota_tim = "mengajukan" → pembuat proyek menerima/menolak
+   b. Pembuat proyek MENGUNDANG mahasiswa dari daftar hasil matchmaking
+      → status anggota_tim = "diundang" → mahasiswa menerima/menolak
+   → Begitu diterima, status anggota_tim = "aktif"
         ↓
-5. Di setiap checkpoint / akhir proyek, anggota tim mengisi peer evaluation
-   → Sistem menjalankan variance check otomatis
+5. Tim terbentuk (berisi anggota berstatus "aktif"), proyek berjalan dengan checkpoint berkala
         ↓
-6. Sistem menghasilkan rekam kontribusi individual
-   → Status: draft → menunggu acc dosen/PIC → final
+6. Di akhir proyek (status proyek = selesai), setiap anggota tim mengisi
+   peer evaluation SATU KALI untuk seluruh proyek (bukan per checkpoint)
+   → Sistem menjalankan variance check otomatis (lihat A.9.5)
         ↓
-7. Rekam kontribusi final menjadi bagian portofolio mahasiswa
+7. Sistem menghasilkan rekam kontribusi individual
+   → Status: draft → (jika ter-flag) menunggu_acc_dosen → final
+   → Jika tidak ter-flag, langsung final tanpa menunggu approval dosen (lihat A.9.6)
+        ↓
+8. Rekam kontribusi final menjadi bagian portofolio mahasiswa
 ```
+
+**Catatan status `ANGGOTA_TIM.status`:** `mengajukan` / `diundang` / `aktif` / `ditolak` / `keluar`. Status ini juga jadi tempat mencatat kasus mahasiswa yang keluar/menghilang di tengah proyek (mitigasi risiko *ghosting*, lihat A.11) — bedanya dengan "ditolak" adalah `keluar` terjadi setelah sempat berstatus `aktif`.
 
 ## A.9 Spesifikasi Fitur
 
@@ -177,7 +189,10 @@ Tech stack mengikuti ketentuan wajib final project: backend PHP/Laravel dengan M
 **Deskripsi:** Mencocokkan profil mahasiswa dengan kebutuhan proyek berdasarkan kecocokan skill dan ketersediaan waktu. *(Detail algoritma dan formula skor di Bagian B.4.)*
 
 **Kriteria penerimaan:**
-- Sistem menampilkan daftar mahasiswa terurut berdasarkan skor kecocokan skill untuk setiap proyek
+- Sistem menampilkan daftar mahasiswa terurut berdasarkan skor kecocokan skill untuk setiap proyek — hasil ini bersifat **rekomendasi**, bukan penempatan otomatis
+- Dari daftar ini, pembuat proyek dapat **mengundang** mahasiswa; mahasiswa yang diundang menerima notifikasi dan bisa **menerima/menolak**
+- Secara simetris, mahasiswa dapat mencari proyek dan **mengajukan diri**; pembuat proyek yang menerima/menolak pengajuan tersebut
+- Anggota tim baru berstatus `aktif` (dan baru dihitung sebagai bagian tim) setelah salah satu dari dua alur konfirmasi di atas selesai — bukan begitu muncul di hasil matchmaking
 - Mahasiswa yang belum pernah mengikuti proyek sebelumnya mendapat penanda "prioritas onboarding" agar lebih mudah terlihat oleh pembuat proyek (mendukung G3 — kesetaraan kesempatan)
 - Ketersediaan waktu yang terbatas tidak mengeliminasi mahasiswa dari hasil pencarian, melainkan ditandai agar pembuat proyek bisa menyesuaikan beban tugas
 
@@ -192,12 +207,18 @@ Tech stack mengikuti ketentuan wajib final project: backend PHP/Laravel dengan M
 
 ### A.9.5 Peer Evaluation
 
-**Deskripsi:** Penilaian kontribusi antar anggota tim di akhir proyek atau di setiap checkpoint.
+**Deskripsi:** Penilaian kontribusi antar anggota tim, dilakukan **satu kali di akhir proyek** (bukan per checkpoint) — begitu status proyek berubah menjadi `selesai`. Peer evaluation menilai kontribusi anggota selama keseluruhan proyek, sedangkan data checkpoint (A.9.4) menjadi bukti pendukung objektif yang berjalan terus sepanjang proyek secara terpisah.
 
 **Kriteria penerimaan:**
-- Setiap anggota menilai semua anggota lain (tidak termasuk dirinya sendiri — divalidasi di level aplikasi)
-- Skor kontribusi (skala numerik) dan kolom komentar bebas
-- Sistem menjalankan variance check: jika seluruh skor yang diberikan ke satu anggota tim nyaris identik tanpa variasi wajar, sistem menandai untuk ditinjau manual oleh dosen/PIC
+- Setiap anggota menilai semua anggota lain di tim yang sama (tidak termasuk dirinya sendiri — divalidasi di level aplikasi: `pemberi_id != penerima_id`)
+- Skor kontribusi menggunakan skala numerik **1–5**, dan kolom komentar bebas (opsional)
+- Peer evaluation baru bisa diisi setelah proyek berstatus `selesai`, dan REKAM_KONTRIBUSI baru digenerate setelah **seluruh** anggota tim menyelesaikan penilaiannya terhadap seluruh rekan setim
+- **Variance check** dijalankan per anggota yang dinilai, menghitung standar deviasi (σ) dari seluruh skor yang diterimanya:
+  - Jika σ < 0.5 **dan** rata-rata skor > 4.0 → flag `kongkalikong` (skor seragam tinggi, indikasi saling menyenangkan)
+  - Jika σ > 2.0 → flag `outlier` (skor sangat bervariasi, indikasi konflik/bias personal, perlu ditinjau siapa pemberi nilai ekstrem)
+  - Selain dua kondisi ini, tidak di-flag → rekam kontribusi otomatis `final`
+  - Threshold (0.5 dan 2.0) didefinisikan sebagai konstanta aplikasi (config), bukan hardcode, agar mudah dikalibrasi ulang saat demo
+  - Alasan flag disimpan (lihat `REKAM_KONTRIBUSI.flag_alasan` di B.6) agar dosen/PIC tahu konteksnya, bukan sekadar status "menunggu_acc_dosen" tanpa keterangan
 
 Sebagai pelengkap peer score (opsional, bisa fase lanjutan), sistem dapat memanfaatkan sinyal kontribusi terukur otomatis: commit log GitHub, jumlah edit di dokumen kolaboratif (Google Docs API), dan timestamp submission tugas/checkpoint per-anggota — supaya penilaian tidak bergantung sepenuhnya pada self-report yang rawan manipulasi.
 
@@ -207,8 +228,18 @@ Sebagai pelengkap peer score (opsional, bisa fase lanjutan), sistem dapat memanf
 
 **Kriteria penerimaan:**
 - Dihasilkan otomatis, bukan diisi manual oleh mahasiswa
-- Status berjenjang: `draft` → `menunggu_acc_dosen` → `final`
-- Memuat: skor rata-rata peer evaluation, ringkasan kontribusi (deskriptif), riwayat ketepatan waktu checkpoint
+- Status **kondisional**, bukan selalu linear melewati approval dosen:
+  ```
+  draft
+    ↓ (variance check dijalankan)
+    ├─ TIDAK ter-flag  → langsung "final" (approval dosen dilewati)
+    └─ TER-FLAG        → "menunggu_acc_dosen"
+                            ├─ dosen setuju  → "final"
+                            └─ dosen tolak   → balik ke "draft", catatan alasan wajib diisi,
+                                               anggota tim terkait diberi tahu untuk klarifikasi
+  ```
+- Ini sekaligus menjawab risiko "beban approval menumpuk di dosen" (A.11) — dosen hanya perlu meninjau kasus yang benar-benar dicurigai, bukan seluruh rekam kontribusi setiap tim
+- Memuat: skor rata-rata peer evaluation, **persentase ketepatan waktu checkpoint** (numerik, lihat B.6), ringkasan kontribusi (teks naratif hasil gabungan angka + komentar peer)
 - Kolom `hash_data` disiapkan di skema tapi tidak wajib diisi di MVP (untuk fase verifikasi lanjutan)
 
 ### A.9.7 Proyek UMKM Simulasi (fitur dampak sosial)
@@ -330,33 +361,37 @@ Dua masalah ini sebenarnya satu rangkaian: proses kolaborasi yang tidak akuntabe
 1. Input profil mahasiswa
    → Skill, minat, jam luang
         ↓
-2. Mesin matchmaking tim
-   → Mencocokkan skill lintas prodi
+2. Mesin matchmaking (rekomendasi, bukan penempatan otomatis)
+   → Mencocokkan skill lintas prodi, tampilkan daftar terurut
         ↓
-3. Eksekusi proyek tim
-   → Checkpoint mingguan
+3. Konfirmasi bergabung (apply oleh mahasiswa / invite oleh pembuat proyek)
+   → Anggota_tim berstatus aktif setelah dikonfirmasi kedua pihak
         ↓
-4. Peer evaluation
-   → Penilaian kontribusi antar anggota
+4. Eksekusi proyek tim
+   → Checkpoint berkala (bukti progres per anggota, bukan tempat peer eval)
         ↓
-5. Rekam kontribusi individual
+5. Peer evaluation (satu kali, saat proyek berstatus selesai)
+   → Penilaian kontribusi antar anggota + variance check otomatis
+        ↓
+6. Rekam kontribusi individual
    → Dihasilkan otomatis dari data sistem (bukan self-report manual)
+   → final langsung jika tidak ter-flag; menunggu_acc_dosen hanya jika ter-flag
         ↓
-6. Portofolio ter-hash & terverifikasi  [FASE 2]
+7. Portofolio ter-hash & terverifikasi  [FASE 2]
    → Sumber data sudah tervalidasi sejak awal proses
 ```
 
 ## B.3 Mitigasi Manipulasi Peer Evaluation (Detail Teknis)
 
-Karena peer evaluation sendiri bisa dimanipulasi (misalnya semua anggota saling memberi nilai tinggi / "kongkalikong"), sistem perlu lapisan mitigasi:
+Karena peer evaluation sendiri bisa dimanipulasi (misalnya semua anggota saling memberi nilai tinggi / "kongkalikong"), sistem perlu lapisan mitigasi. Peer evaluation dilakukan satu kali di akhir proyek (lihat A.9.5); mitigasi di bawah ini berjalan tepat setelah seluruh anggota tim selesai mengisi penilaian:
 
-- **Variance check**: jika seluruh nilai antar anggota nyaris identik, sistem menandai untuk ditinjau manual (dosen/PIC)
+- **Variance check** (formula lengkap di A.9.5): dihitung standar deviasi skor yang diterima tiap anggota — σ rendah + rata-rata tinggi → flag `kongkalikong`; σ tinggi → flag `outlier`. Keduanya ditandai untuk ditinjau manual (dosen/PIC); jika tidak ada flag, rekam kontribusi langsung `final` tanpa menunggu approval
 - **Kontribusi terukur otomatis** (opsional, bisa fase lanjutan) — sebagai pelengkap peer score, bukan pengganti, karena peer review saja rawan manipulasi jika dijadikan satu-satunya sumber data:
   - Commit log GitHub (jumlah commit, file yang diubah, per anggota)
   - Jumlah edit di dokumen kolaboratif (Google Docs API — riwayat revisi per kontributor)
   - Timestamp submission tugas/checkpoint per-anggota
-  - Jumlah checkpoint yang diisi tepat waktu
-- **Validasi berjenjang**: peer evaluation dari tim → opsional di-acc oleh dosen/PIC sebelum dianggap final
+  - Persentase checkpoint yang diisi tepat waktu (sudah masuk MVP sebagai field `REKAM_KONTRIBUSI.persentase_ketepatan_waktu`, lihat B.6)
+- **Validasi berjenjang kondisional**: rekam kontribusi hanya perlu di-acc dosen/PIC jika ter-flag oleh variance check — bukan selalu, agar beban approval dosen tidak menumpuk (lihat A.11 & A.9.6)
 
 ## B.4 Rancangan Teknis Mesin Matchmaking (Detail Algoritma)
 
@@ -560,7 +595,8 @@ erDiagram
     int proyek_id FK
     int mahasiswa_id FK
     string peran
-    date tanggal_join
+    string status "mengajukan | diundang | aktif | ditolak | keluar"
+    date tanggal_join "diisi saat status menjadi aktif"
   }
 
   CHECKPOINT {
@@ -592,9 +628,11 @@ erDiagram
   REKAM_KONTRIBUSI {
     int id PK
     int anggota_tim_id FK
-    int skor_rata_rata
+    float skor_rata_rata
+    float persentase_ketepatan_waktu "checkpoint tepat waktu / total checkpoint"
     text ringkasan_kontribusi
-    string status_validasi
+    string status_validasi "draft | menunggu_acc_dosen | final"
+    string flag_alasan "kongkalikong | outlier | null"
     string hash_data
     datetime dibuat_pada
   }
@@ -606,7 +644,9 @@ erDiagram
 - `MAHASISWA` adalah **ekstensi profil** dari `USER` — hanya dibuat untuk user dengan `role = mahasiswa`. Relasi `USER → MAHASISWA` adalah one-to-one opsional (dosen/PIC tidak punya baris di `MAHASISWA`)
 - `PROYEK.pembuat_id` dan `APPROVAL_PIC.pic_id` keduanya merujuk ke `USER.id` — pembuat proyek bisa mahasiswa atau dosen, sementara PIC selalu user dengan role `dosen` atau `pic_ukm` (divalidasi di level aplikasi)
 - `PEER_EVALUASI` memiliki dua relasi ke `ANGGOTA_TIM` (pemberi dan penerima) — wajib dibedakan secara eksplisit di level kode aplikasi untuk mencegah anggota menilai dirinya sendiri (validasi: `pemberi_id != penerima_id`)
-- `PEER_EVALUASI.proyek_id` sengaja dipertahankan meskipun bisa diturunkan dari `ANGGOTA_TIM.proyek_id` — ini **denormalisasi disengaja** untuk mempercepat query daftar evaluasi per proyek tanpa join tambahan, dan memudahkan constraint validasi bahwa pemberi dan penerima harus berada di proyek yang sama
+- `PEER_EVALUASI.proyek_id` sengaja dipertahankan meskipun bisa diturunkan dari `ANGGOTA_TIM.proyek_id` — ini **denormalisasi disengaja** untuk mempercepat query daftar evaluasi per proyek tanpa join tambahan, dan memudahkan constraint validasi bahwa pemberi dan penerima harus berada di proyek yang sama. Karena peer evaluation hanya diisi sekali (di akhir proyek, lihat A.9.5), tidak perlu FK ke `checkpoint_id`
+- `ANGGOTA_TIM.status` mendukung alur konfirmasi dua arah (apply/invite, lihat A.8 & A.9.3): `mengajukan` dan `diundang` adalah status sementara sebelum ada konfirmasi, `aktif` baru dihitung sebagai anggota tim sesungguhnya (baru dari titik inilah dia bisa submit checkpoint dan ikut peer evaluation), `keluar` menampung kasus ghosting di tengah proyek (lihat A.11)
+- `REKAM_KONTRIBUSI.flag_alasan` menyimpan hasil variance check (`kongkalikong` / `outlier` / `null`) — dipakai untuk menentukan apakah status_validasi perlu singgah di `menunggu_acc_dosen` atau boleh langsung `final` (lihat A.9.6), dan memberi konteks ke dosen/PIC saat meninjau
 - `SUBMISI_CHECKPOINT` tidak memiliki FK langsung ke `MAHASISWA` — data mahasiswa diakses melalui join `SUBMISI_CHECKPOINT → ANGGOTA_TIM → MAHASISWA`. Ini sesuai normalisasi karena submisi selalu dalam konteks keanggotaan tim, bukan mahasiswa secara independen
 - `REKAM_KONTRIBUSI.status_validasi` menampung status seperti `draft`, `menunggu_acc_dosen`, `final` — mendukung mekanisme validasi berjenjang
 - `REKAM_KONTRIBUSI.hash_data` disiapkan sebagai kolom untuk fase 2 (hash chain), tidak wajib diisi di MVP

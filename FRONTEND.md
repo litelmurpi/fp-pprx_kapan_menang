@@ -2,13 +2,13 @@
 
 ## Platform Kolaborasi Tim Kampus dengan Rekam Jejak Terverifikasi
 
-> Dokumen ini memetakan setiap spesifikasi fitur dari [PRD.md](./PRD.md) ke desain antarmuka konkret. Merujuk sistem visual baru yang didefinisikan di [DESIGN.md](./DESIGN.md) (Modern Minimalist × Digital Workspace — terinspirasi Linear, Vercel, dan GitHub).
+> Dokumen ini memetakan setiap spesifikasi fitur dari [PRD.md](./PRD.md) ke desain antarmuka konkret. Merujuk sistem visual yang didefinisikan di [DESIGN.md](./DESIGN.md) (Verstack Linear Theme Edition — Dual Theme System terinspirasi Linear.app, Vercel, dan GitHub).
 
 | | |
 |---|---|
 | Merujuk PRD versi | 1.1 |
 | Tech stack frontend | React (SPA) + Vite + Tailwind CSS + Axios |
-| Desain sistem | Modern Minimalist × Digital Workspace (Brand Accent Green `#22C55E` + Indigo `#4F46E5` + Monochrome, lihat [DESIGN.md](./DESIGN.md)) |
+| Desain sistem | Linear Workstation (Dual Theme: Obsidian Dark Mode `#08090A` / Crisp Light `#FFFFFF` + Brand Violet `#5E6AD2` + Emerald `#10B981`, lihat [DESIGN.md](./DESIGN.md)) |
 | HTTP client | Axios → Laravel Sanctum API (`localhost:8000`) |
 | Icon library | Lucide React + PixelIcons.jsx (sebagai aksen dekorasi kecil: `PixelCloud`, `PixelDino`, `PixelRobot`, dll.) |
 

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
-import Hero from './components/Hero';
+import SaaSLandingPage from './components/SaaSLandingPage';
 import MatchmakingSection from './components/MatchmakingSection';
 import WorkspaceSection from './components/WorkspaceSection';
 import PeerEvalSection from './components/PeerEvalSection';
@@ -12,20 +12,34 @@ import './index.css';
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [currentUser, setCurrentUser] = useState(testAccounts[0]);
+  const [theme, setTheme] = useState('dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-white selection:bg-[#22C55E] selection:text-white">
+    <div data-theme={theme} className={`min-h-screen flex flex-col justify-between theme-canvas theme-text transition-colors duration-300 ${theme}`}>
       
       <Navbar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         currentUser={currentUser} 
-        setCurrentUser={setCurrentUser} 
+        setCurrentUser={setCurrentUser}
+        theme={theme}
+        setTheme={setTheme}
       />
 
       <main className="flex-1">
         {activeTab === 'home' && (
-          <Hero setActiveTab={setActiveTab} />
+          <SaaSLandingPage setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'matchmaking' && (
@@ -45,8 +59,7 @@ function App() {
         )}
       </main>
 
-      <Footer setActiveTab={setActiveTab} />
-
+      <Footer activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }
