@@ -11,6 +11,7 @@ import MatchmakingSection from './components/MatchmakingSection';
 import WorkspaceSection from './components/WorkspaceSection';
 import PeerEvalSection from './components/PeerEvalSection';
 import UmkmSection from './components/UmkmSection';
+import DashboardSection from './components/DashboardSection';
 import Footer from './components/Footer';
 import Lenis from '@studio-freight/lenis';
 import './index.css';
@@ -100,7 +101,11 @@ function MainApp() {
 
       <main className="flex-1">
         {activeTab === 'home' && (
-          <SaaSLandingPage setActiveTab={setActiveTab} />
+          mappedUser ? (
+            <DashboardSection currentUser={mappedUser} setActiveTab={setActiveTab} />
+          ) : (
+            <SaaSLandingPage setActiveTab={setActiveTab} />
+          )
         )}
 
         {activeTab === 'matchmaking' && (
@@ -140,6 +145,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<MainApp />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route

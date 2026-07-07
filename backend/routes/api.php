@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\RekamKontribusiController;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/proyek', [ProyekController::class, 'index']);
 Route::get('/portfolio/{nim}', [RekamKontribusiController::class, 'getPublicPortfolio']);
 
 Route::get('/health', function () {
@@ -38,7 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/skills/master', [MahasiswaController::class, 'masterSkills']);
 
     // Proyek & Approval
-    Route::get('/proyek', [ProyekController::class, 'index']);
     Route::get('/proyek/waiting-approval', [ProyekController::class, 'getWaitingApproval']);
     Route::get('/proyek/categories', [ProyekController::class, 'getCategories']);
     Route::post('/proyek', [ProyekController::class, 'store']);

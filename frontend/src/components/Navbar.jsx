@@ -5,7 +5,12 @@ import { PixelRobot } from './PixelIcons';
 const Navbar = ({ activeTab, setActiveTab, currentUser, theme, setTheme, logout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const navLinks = [
+  const navLinks = currentUser ? [
+    { id: 'home', label: 'Dashboard', isAnchor: false },
+    { id: 'matchmaking', label: 'Find Team', isAnchor: false },
+    { id: 'workspace', label: 'Workspace', isAnchor: false },
+    { id: 'umkm', label: 'UMKM', isAnchor: false },
+  ] : [
     { id: 'home', label: 'Home', isAnchor: true },
     { id: 'features', label: 'Features', isAnchor: true },
     { id: 'how-it-works', label: 'How it Works', isAnchor: true },
@@ -95,8 +100,8 @@ const Navbar = ({ activeTab, setActiveTab, currentUser, theme, setTheme, logout 
               {theme === 'dark' ? <Sun className="w-4 h-4 brand-text" /> : <Moon className="w-4 h-4 brand-text" />}
             </button>
 
-            {/* Authenticated User Info & Logout */}
-            {currentUser && (
+            {/* Authenticated User Info & Logout OR Login/Register */}
+            {currentUser ? (
               <div className="flex items-center gap-2.5 border theme-border theme-surface rounded-xl px-3 py-1.5 shadow-sm">
                 <img 
                   src={currentUser.avatar} 
@@ -116,6 +121,21 @@ const Navbar = ({ activeTab, setActiveTab, currentUser, theme, setTheme, logout 
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
                 </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <a 
+                  href="/login"
+                  className="hidden sm:flex text-xs font-semibold theme-text hover:text-[var(--color-primary)] px-3 py-1.5 transition-colors"
+                >
+                  Log in
+                </a>
+                <a 
+                  href="/register"
+                  className="btn-primary text-xs font-bold px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(204,253,21,0.3)] transition-all cursor-pointer"
+                >
+                  Get Started
+                </a>
               </div>
             )}
 
@@ -149,12 +169,13 @@ const Navbar = ({ activeTab, setActiveTab, currentUser, theme, setTheme, logout 
                 {link.label}
               </button>
             ))}
-            <button
-              onClick={() => { setActiveTab('workspace'); setMobileOpen(false); }}
-              className="block w-full text-left px-4 py-2.5 text-xs font-medium brand-badge rounded-xl cursor-pointer"
-            >
-              Open Workspace
-            </button>
+
+            {!currentUser && (
+              <div className="px-4 py-2 mt-2 space-y-2 border-t theme-border">
+                <a href="/login" className="block w-full text-center py-2.5 text-xs font-bold theme-text border theme-border rounded-xl">Log in</a>
+                <a href="/register" className="block w-full text-center py-2.5 text-xs font-bold btn-primary rounded-xl">Get Started</a>
+              </div>
+            )}
           </div>
         )}
       </div>
