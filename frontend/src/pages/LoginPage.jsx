@@ -7,6 +7,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showDemoMenu, setShowDemoMenu] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   
@@ -66,7 +67,7 @@ const LoginPage = () => {
   ];
 
   return (
-    <div className="max-h-screen flex flex-col justify-center items-center bg-[var(--color-canvas)] bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] light:bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:48px_48px] relative p-4 sm:p-6 transition-colors duration-300 font-sans">
+    <div className="max-h-screen flex flex-col justify-center items-center bg-[var(--color-canvas)] bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] light:bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:48px_48px] relative p-4 sm:p-6 transition-colors duration-300">
       
       {/* Ambient Radial Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[var(--color-primary)]/10 dark:bg-[var(--color-primary)]/10 light:bg-[var(--color-primary)]/5 blur-[140px] rounded-full pointer-events-none -z-10"></div>
@@ -89,23 +90,53 @@ const LoginPage = () => {
         <div className="lg:col-span-6 relative overflow-hidden rounded-[22px] sm:rounded-[24px] bg-gradient-to-br from-[#161f03] via-[#0d1402] to-[#060901] dark:from-[#161f03] dark:via-[#0d1402] dark:to-[#060901] light:from-[#f0fde4] light:via-[#f8fef0] light:to-[#ffffff] border border-[var(--color-border)] p-7 sm:p-9 flex flex-col justify-between min-h-[260px] lg:min-h-[520px]">
           {/* Ambient glowing blobs inside left card */}
           <div className="absolute -top-20 -left-20 w-64 h-64 bg-[var(--color-primary)]/35 rounded-full blur-[60px] pointer-events-none"></div>
-          <div className="absolute top-1/3 -right-10 w-56 h-56 bg-emerald-500/20 rounded-full blur-[70px] pointer-events-none"></div>
+          <div className="absolute top-1/3 -right-10 w-56 h-56 bg-[var(--color-primary)]/12 rounded-full blur-[70px] pointer-events-none"></div>
           <div className="absolute -bottom-16 -left-10 w-72 h-72 bg-[var(--color-primary)]/20 rounded-full blur-[80px] pointer-events-none"></div>
           
-          {/* Top-left Asterisk/Sparkle Icon */}
-          <div className="relative z-10">
-            <div className="text-[var(--color-primary)] w-10 h-10 flex items-center justify-center bg-white/5 dark:bg-white/5 light:bg-black/5 rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 shadow-sm">
-              <Sparkles className="w-5 h-5 text-[var(--color-primary)]" />
-            </div>
+          {/* Top-left Asterisk/Sparkle Icon (Interactive Dummy Account Trigger) */}
+          <div className="relative z-20">
+            <button
+              type="button"
+              onClick={() => setShowDemoMenu(!showDemoMenu)}
+              title="Klik untuk memilih Akun Dummy / Demo"
+              className="text-[var(--color-primary)] w-10 h-10 flex items-center justify-center bg-white/10 dark:bg-white/10 light:bg-black/10 rounded-2xl border border-white/20 dark:border-white/20 light:border-black/20 shadow-md"
+            >
+              <Sparkles className="w-5 h-5 transition-transform group-hover:rotate-12" />
+            </button>
+
+            {/* Dummy Accounts Bubble Blocks */}
+            {showDemoMenu && (
+              <div className="absolute top-12 left-0 w-64 sm:w-72 flex flex-col gap-2 z-50">
+                {demoAccounts.map((account, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    style={{ animationDelay: `${idx * 55}ms` }}
+                    onClick={() => {
+                      handleDemoLogin(account.email);
+                      setShowDemoMenu(false);
+                    }}
+                    className="w-full text-left px-3.5 py-2.5 rounded-2xl bg-white/10 dark:bg-white/10 light:bg-black/10 hover:bg-[var(--color-primary)] hover:text-[#111111] border border-white/20 dark:border-white/20 light:border-black/20 backdrop-blur-md shadow-md transition-all cursor-pointer flex items-center justify-between group/item scale-100 hover:scale-[1.02] active:scale-98 animate-bubble-pop"
+                  >
+                    <span className="text-xs font-bold text-white light:text-black group-hover/item:text-[#111111] transition-colors">
+                      {account.name}
+                    </span>
+                    <span className="text-[9px] font-mono-tech uppercase px-2 py-0.5 rounded-lg bg-white/10 dark:bg-white/10 light:bg-black/10 group-hover/item:bg-[#111111]/15 text-[var(--color-primary)] group-hover/item:text-[#111111] font-bold transition-colors">
+                      {account.role}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Bottom-left Text */}
           <div className="relative z-10 mt-12 sm:mt-0 space-y-2.5">
-            <p className="text-[11px] font-mono uppercase tracking-widest text-[var(--color-primary)] font-semibold">
-              Verstack Collaboration Hub
+            <p className="text-[11px] font-mono-tech uppercase tracking-widest text-[var(--color-primary)] font-semibold">
+              Verstack Collaboration
             </p>
             <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold tracking-tight text-white light:text-white leading-[1.25]">
-              Temukan rekan yang tepat untuk proyek, kompetisi, atau ide berikutnya.
+              Tim yang tepat,<br />hasil yang hebat.
             </h3>
           </div>
         </div>
@@ -122,7 +153,6 @@ const LoginPage = () => {
           {/* Global Error Banner */}
           {error && (
             <div className="mt-5 p-3.5 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-xs flex items-center gap-2 animate-pulse">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
               <span>{error}</span>
             </div>
           )}
@@ -205,7 +235,7 @@ const LoginPage = () => {
       </main>
       
       {/* Footer Branding */}
-      <footer className="mt-4 mb-6 text-center text-[10px] text-[var(--color-text-tertiary)] font-mono">
+      <footer className="mt-4 mb-6 text-center text-[10px] text-[var(--color-text-tertiary)] font-mono-tech">
         <p>&copy; 2026 Verstack Inc. All rights reserved.</p>
       </footer>
     </div>
