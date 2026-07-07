@@ -93,10 +93,13 @@ const SaaSLandingPage = ({ setActiveTab }) => {
   });
 
   return (
-    <div className="w-full overflow-hidden theme-canvas theme-text">
+    <div className="w-full overflow-hidden theme-canvas theme-text relative">
+      
+      {/* ================= BACKGROUND GRID OVERLAY FOR HERO ================= */}
+      <div className="absolute top-0 left-0 right-0 h-[900px] -z-10 pointer-events-none bg-grid-pattern [mask-image:radial-gradient(ellipse_80%_65%_at_50%_35%,#000_75%,transparent_100%)] opacity-100" />
       
       {/* ================= HERO SECTION ================= */}
-      <section className="relative pt-28 pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center z-10">
+      <section id="home" className="relative pt-48 pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center z-10">
         
         {/* Large Radial Glow Behind Hero */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] bg-[var(--color-brand)]/15 blur-[140px] rounded-full pointer-events-none -z-10 animate-pulse-glow" />
@@ -128,7 +131,7 @@ const SaaSLandingPage = ({ setActiveTab }) => {
         </div>
 
         {/* ================= HERO ILLUSTRATION (Floating Dashboard over Pixel Halftone Sphere) ================= */}
-        <div className="mt-24 relative max-w-5xl mx-auto">
+        <div className="mt-28 relative max-w-5xl mx-auto">
           
           {/* Giant Pixelated Halftone Sphere Background */}
           <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[550px] sm:w-[750px] h-[350px] sm:h-[450px] pointer-events-none -z-10 opacity-30 flex items-center justify-center">
@@ -158,7 +161,9 @@ const SaaSLandingPage = ({ setActiveTab }) => {
                 <span className="w-3 h-3 rounded-full bg-red-500/70" />
                 <span className="w-3 h-3 rounded-full bg-amber-500/70" />
                 <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
-                <span className="ml-2 font-mono-tech text-xs theme-text-sub">verstack-synergy-matrix.ai</span>
+                <span className="ml-3 font-mono-tech text-xs theme-text-sub">
+                  https://app.verstack.io/
+                </span>
               </div>
             </div>
 
@@ -313,7 +318,6 @@ const SaaSLandingPage = ({ setActiveTab }) => {
                 <circle cx="100" cy="20" r="8" fill="currentColor" />
                 <circle cx="100" cy="60" r="8" fill="currentColor" opacity="0.6" />
                 <circle cx="170" cy="40" r="10" fill="var(--color-elevated)" stroke="currentColor" strokeWidth="3" />
-                <text x="94" y="23" fill="var(--color-text-primary)" fontSize="8" fontWeight="bold" fontFamily="monospace">AI</text>
               </svg>
             </div>
           </div>
@@ -424,9 +428,8 @@ const SaaSLandingPage = ({ setActiveTab }) => {
       </section>
 
       {/* ================= INTERACTIVE PREVIEW ================= */}
-      <section id="preview" className="py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t theme-border">
+      <section id="preview" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t theme-border">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <p className="text-xs uppercase tracking-widest brand-text font-mono-tech mb-3">LIVE SYNERGY EXPLORER</p>
           <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight theme-text">
             Interactive Teammate Preview
           </h2>
@@ -536,72 +539,6 @@ const SaaSLandingPage = ({ setActiveTab }) => {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ================= STATISTICS SECTION ================= */}
-      <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t theme-border">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-          {[
-            { num: '12K+', label: 'Verified Members' },
-            { num: '4.9★', label: 'Average Rating' },
-            { num: '950+', label: 'Projects Created' },
-            { num: '91%', label: 'Successful Collaboration' }
-          ].map((stat, i) => (
-            <div key={i} className="theme-card p-8 rounded-[24px] hover:border-[var(--color-brand)]/40 transition-all shadow-sm">
-              <p className="text-4xl sm:text-6xl font-extrabold brand-text font-mono-tech tracking-tight">{stat.num}</p>
-              <p className="mt-2 text-sm theme-text-sub font-medium">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ================= TESTIMONIALS ================= */}
-      <section id="resources" className="py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t theme-border">
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <p className="text-xs uppercase tracking-widest brand-text font-mono-tech mb-3">COMMUNITY TRUST</p>
-          <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight theme-text">
-            What Builders Say
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              quote: "Verstack completely eliminated our free-rider problem during capstone projects. The AI match score predicted our team synergy with 98% accuracy.",
-              name: "Jordan Vance",
-              role: "Computer Science Senior @ Stanford",
-              tag: "SHA-256 VERIFIED"
-            },
-            {
-              quote: "Finding a UI/UX designer who actually understood design systems and Tailwind took less than 10 minutes. This is how modern teams should be formed.",
-              name: "Kevin Liang",
-              role: "Founder @ Buildathon AI",
-              tag: "TOP REPUTATION"
-            },
-            {
-              quote: "The cryptographic audit trail made it so simple to prove our individual contributions to recruiters. It's like GitHub + LinkedIn for project builders.",
-              name: "Maya Lin",
-              role: "Frontend Engineer Intern",
-              tag: "5.0★ CONTRIBUTOR"
-            }
-          ].map((testi, i) => (
-            <div key={i} className="theme-card p-8 rounded-[24px] flex flex-col justify-between relative overflow-hidden group hover:border-[var(--color-brand)] shadow-sm">
-              <div className="absolute top-0 left-0 w-1.5 h-full brand-bg" />
-              <p className="text-sm theme-text-sub leading-relaxed italic mb-8">
-                "{testi.quote}"
-              </p>
-              <div className="pt-4 border-t theme-border flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-bold theme-text">{testi.name}</p>
-                  <p className="text-xs theme-text-muted font-mono-tech">{testi.role}</p>
-                </div>
-                <span className="text-[9px] font-mono-tech brand-badge px-2 py-1 rounded font-bold">
-                  {testi.tag}
-                </span>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 

@@ -7,12 +7,48 @@ import PeerEvalSection from './components/PeerEvalSection';
 import UmkmSection from './components/UmkmSection';
 import Footer from './components/Footer';
 import { testAccounts } from './data/mockData';
+import Lenis from '@studio-freight/lenis';
 import './index.css';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [currentUser, setCurrentUser] = useState(testAccounts[0]);
   const [theme, setTheme] = useState('dark');
+  const [joinedProjects, setJoinedProjects] = useState([102]); // Budi Santoso is in project 102 by default
+
+  const handleJoinProject = (projectId, joinData = {}) => {
+    if (!joinedProjects.includes(projectId)) {
+      setJoinedProjects(prev => [...prev, projectId]);
+    }
+  };
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    window.lenis = lenis;
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+      delete window.lenis;
+    };
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -43,19 +79,29 @@ function App() {
         )}
 
         {activeTab === 'matchmaking' && (
-          <MatchmakingSection currentUser={currentUser} setActiveTab={setActiveTab} />
+          <MatchmakingSection 
+            currentUser={currentUser} 
+            setActiveTab={setActiveTab}
+            joinedProjects={joinedProjects}
+            onJoinProject={handleJoinProject}
+          />
         )}
 
         {activeTab === 'workspace' && (
-          <WorkspaceSection currentUser={currentUser} />
+          <WorkspaceSection currentUser={currentUser} setActiveTab={setActiveTab} />
         )}
 
-        {activeTab === 'peereval' && (
-          <PeerEvalSection currentUser={currentUser} />
+        {(activeTab === 'peer-eval' || activeTab === 'peereval') && (
+          <PeerEvalSection currentUser={currentUser} setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'umkm' && (
-          <UmkmSection currentUser={currentUser} setActiveTab={setActiveTab} />
+          <UmkmSection 
+            currentUser={currentUser} 
+            setActiveTab={setActiveTab}
+            joinedProjects={joinedProjects}
+            onJoinProject={handleJoinProject}
+          />
         )}
       </main>
 

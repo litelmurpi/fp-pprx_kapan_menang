@@ -90,7 +90,6 @@ const Footer = ({ setActiveTab }) => {
         <div className="mt-16 pt-8 theme-border border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-xs theme-text-muted font-mono-tech">
           <p>© 2026 Verstack Inc. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <span>SHA-256 IMMUTABLE LEDGER</span>
             <span className="flex items-center gap-1.5 theme-text-sub">
               <span>Zero Free-Riders Guaranteed</span>
               <PixelHeart className="w-3.5 h-3.5 brand-text" />
