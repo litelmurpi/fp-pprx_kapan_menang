@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Menu, X, Sun, Moon, ArrowRight } from 'lucide-react';
 import { PixelRobot } from './PixelIcons';
 
-const Navbar = ({ activeTab, setActiveTab, currentUser, setCurrentUser, theme, setTheme }) => {
+const Navbar = ({ activeTab, setActiveTab, currentUser, theme, setTheme, logout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navLinks = [
@@ -82,32 +82,9 @@ const Navbar = ({ activeTab, setActiveTab, currentUser, setCurrentUser, theme, s
             ))}
           </nav>
 
-          {/* Right side: Theme Switcher + Get Started */}
+          {/* Right side: Theme Switcher + User Profile / Logout */}
           <div className="flex-1 flex items-center justify-end gap-3">
             
-            {currentUser ? (
-              <div 
-                onClick={() => setCurrentUser(null)}
-                title="Click to Logout"
-                className="backdrop-blur-md flex items-center gap-2 pl-2 pr-3 py-1.5 bg-black/5 dark:bg-white/5 border theme-border rounded-xl cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shadow-sm"
-              >
-                <div className="w-6 h-6 rounded-full primary-bg flex items-center justify-center text-[#111111] font-bold text-[11px] shadow-sm">
-                  {currentUser.name ? currentUser.name.charAt(0) : 'U'}
-                </div>
-                <span className="text-xs font-medium theme-text hidden sm:block">
-                  {currentUser.name || 'Profile'}
-                </span>
-              </div>
-            ) : (
-              <button 
-                onClick={() => setCurrentUser({ name: 'Budi Santoso', role: 'Developer', skills: ['React', 'Node.js'], freeHours: 15 })}
-                className="btn-brand-primary px-5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer shadow-sm flex items-center gap-1.5"
-              >
-                <span>Login</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            )}
-
             {/* Theme Switcher Button */}
             <button
               onClick={toggleTheme}
@@ -117,7 +94,31 @@ const Navbar = ({ activeTab, setActiveTab, currentUser, setCurrentUser, theme, s
             >
               {theme === 'dark' ? <Sun className="w-4 h-4 brand-text" /> : <Moon className="w-4 h-4 brand-text" />}
             </button>
-  
+
+            {/* Authenticated User Info & Logout */}
+            {currentUser && (
+              <div className="flex items-center gap-2.5 border theme-border theme-surface rounded-xl px-3 py-1.5 shadow-sm">
+                <img 
+                  src={currentUser.avatar} 
+                  alt={currentUser.name} 
+                  className="w-5 h-5 rounded-full border theme-border"
+                />
+                <div className="hidden sm:block text-left">
+                  <div className="text-[10.5px] font-bold theme-text leading-none">{currentUser.name}</div>
+                  <div className="text-[8px] theme-text-muted font-mono leading-none mt-1 uppercase tracking-wider">{currentUser.badge}</div>
+                </div>
+                <button 
+                  onClick={logout}
+                  title="Logout"
+                  className="ml-1 text-zinc-500 hover:text-red-500 p-1 hover:bg-red-500/10 rounded-lg transition-all cursor-pointer flex items-center justify-center"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
             {/* Mobile menu toggle */}
             <button 
               className="md:hidden ml-1 p-2.5 rounded-full theme-surface/80 backdrop-blur-md hover:bg-black/10 dark:hover:bg-white/10 theme-border border cursor-pointer theme-text transition-all shadow-sm"

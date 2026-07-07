@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+
 import Navbar from './components/Navbar';
 import SaaSLandingPage from './components/SaaSLandingPage';
 import MatchmakingSection from './components/MatchmakingSection';
@@ -6,14 +12,13 @@ import WorkspaceSection from './components/WorkspaceSection';
 import PeerEvalSection from './components/PeerEvalSection';
 import UmkmSection from './components/UmkmSection';
 import Footer from './components/Footer';
-import { testAccounts } from './data/mockData';
 import Lenis from '@studio-freight/lenis';
 import './index.css';
 
-function App() {
+function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
-  const [currentUser, setCurrentUser] = useState(testAccounts[0]);
-  const [theme, setTheme] = useState('dark');
+  const { user, logout } = useAuth();
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [joinedProjects, setJoinedProjects] = useState([102]); // Budi Santoso is in project 102 by default
 
   const handleJoinProject = (projectId, joinData = {}) => {
@@ -59,18 +64,38 @@ function App() {
       document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
     }
+    localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Construct a user object that fits the format the existing sections expect
+  const mappedUser = user ? {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`,
+    prodi: user.mahasiswa?.prodi || 'Informatika',
+    freeHours: user.mahasiswa?.jam_luang_per_minggu !== undefined ? user.mahasiswa.jam_luang_per_minggu : 10,
+    skills: (user.mahasiswa?.profil_skills || user.mahasiswa?.profilSkills || [])
+      .map(ps => ps.skill?.nama || ps.skill?.name)
+      .filter(Boolean),
+    role: user.role === 'mahasiswa'
+      ? `Mahasiswa (${user.mahasiswa?.minat_bidang || 'Kolaborator'})`
+      : (user.role === 'pic_ukm' ? 'PIC UKM' : 'Dosen Reviewer'),
+    badge: user.role === 'mahasiswa'
+      ? (user.mahasiswa?.minat_bidang || 'Kolaborator')
+      : (user.role === 'pic_ukm' ? 'Staff' : 'Faculty'),
+    status: 'Active'
+  } : null;
 
   return (
     <div data-theme={theme} className={`min-h-screen flex flex-col justify-between theme-canvas theme-text transition-colors duration-300 ${theme}`}>
-      
-      <Navbar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        currentUser={currentUser} 
-        setCurrentUser={setCurrentUser}
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        currentUser={mappedUser}
         theme={theme}
         setTheme={setTheme}
+        logout={logout}
       />
 
       <main className="flex-1">
@@ -79,8 +104,8 @@ function App() {
         )}
 
         {activeTab === 'matchmaking' && (
-          <MatchmakingSection 
-            currentUser={currentUser} 
+          <MatchmakingSection
+            currentUser={mappedUser}
             setActiveTab={setActiveTab}
             joinedProjects={joinedProjects}
             onJoinProject={handleJoinProject}
@@ -88,16 +113,16 @@ function App() {
         )}
 
         {activeTab === 'workspace' && (
-          <WorkspaceSection currentUser={currentUser} setActiveTab={setActiveTab} />
+          <WorkspaceSection currentUser={mappedUser} setActiveTab={setActiveTab} />
         )}
 
         {(activeTab === 'peer-eval' || activeTab === 'peereval') && (
-          <PeerEvalSection currentUser={currentUser} setActiveTab={setActiveTab} />
+          <PeerEvalSection currentUser={mappedUser} setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'umkm' && (
-          <UmkmSection 
-            currentUser={currentUser} 
+          <UmkmSection
+            currentUser={mappedUser}
             setActiveTab={setActiveTab}
             joinedProjects={joinedProjects}
             onJoinProject={handleJoinProject}
@@ -107,6 +132,27 @@ function App() {
 
       <Footer activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <MainApp />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
