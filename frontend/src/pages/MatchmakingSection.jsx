@@ -5,9 +5,8 @@ import {
   BookOpen, Send, CheckCircle2, Briefcase, UserCheck, Layers, Zap, Calendar, 
   Users, Maximize2, MessageSquare 
 } from 'lucide-react';
-import { PixelSparkle, PixelCheck, PixelStar, PixelRobot } from './PixelIcons';
 import { mockProjects, mockCheckpoints } from '../data/mockData';
-import ProjectDetailModal from './ProjectDetailModal';
+import ProjectDetailModal from '../components/ProjectDetailModal';
 
 const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoined, onJoinProject }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -530,9 +529,6 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
                           <Briefcase className="w-4 h-4 primary-text" />
                           <span>Pengajuan Permintaan Gabung Tim (Quick Apply)</span>
                         </h4>
-                        <span className="text-[10px] font-mono-tech badge-primary px-2 py-0.5 rounded">
-                          ⚡ Verstack Instant Review
-                        </span>
                       </div>
 
                       {submittedSuccess ? (
