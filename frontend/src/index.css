@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *, .light, .light *));
+
 /* Lenis Smooth Scroll Setup */
 html.lenis, html.lenis body {
   height: auto;
@@ -50,19 +52,19 @@ section[id] {
   --color-primary-hover: #BADC0E;
   --color-primary-foreground: #111111;
   
-  --color-secondary: #FAFAFA;
-  --color-secondary-hover: #E5E5E5;
-  --color-secondary-foreground: #0A0A0A;
+  --color-secondary: #161616;
+  --color-secondary-hover: #262626;
+  --color-secondary-foreground: #FFFFFF;
   
   --color-accent: #CCFD15;
-  --color-accent-soft: rgba(204, 253, 21, 0.12);
-  --color-accent-border: rgba(204, 253, 21, 0.35);
+  --color-accent-soft: rgba(204, 253, 21, 0.15);
+  --color-accent-border: rgba(204, 253, 21, 0.30);
   --color-accent-text: #CCFD15;
   
-  --color-info: #FAFAFA;
-  --color-info-soft: rgba(255, 255, 255, 0.10);
+  --color-info: #FFFFFF;
+  --color-info-soft: rgba(255, 255, 255, 0.08);
   --color-info-border: rgba(255, 255, 255, 0.20);
-  --color-info-text: #FAFAFA;
+  --color-info-text: #FFFFFF;
 
   /* Backward-compatible mappings during refactor */
   --color-brand: #CCFD15;
@@ -79,8 +81,8 @@ section[id] {
   --color-cyan: #FAFAFA;
   
   --bg-grid: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
 
 [data-theme="light"], .light {
@@ -134,13 +136,20 @@ section[id] {
   --color-cyan: #0A0A0A;
   
   --bg-grid: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
 }
 
 .bg-grid-pattern {
   background-image: var(--bg-grid);
   background-size: 48px 48px;
+}
+
+/* Universal Smooth Theme Cross-Fade for All Elements */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 350ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
@@ -153,7 +162,6 @@ body {
   line-height: 1.5;
   background-image: var(--bg-grid);
   background-size: 48px 48px;
-  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 ::selection {
@@ -305,6 +313,38 @@ body {
   animation: pulse-glow 4s ease-in-out infinite;
 }
 
+@keyframes bubble-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.88);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(3px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-bubble-pop {
+  animation: bubble-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes form-slide {
+  0% {
+    opacity: 0;
+    transform: translateX(18px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+.animate-form-slide {
+  animation: form-slide 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -319,4 +359,34 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-border-hover);
+}
+
+@keyframes placeholderSlideUpIn {
+  0% {
+    transform: translateY(150%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes placeholderSlideUpOut {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-150%);
+    opacity: 0;
+  }
+}
+
+.animate-placeholder-in {
+  animation: placeholderSlideUpIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-placeholder-out {
+  animation: placeholderSlideUpOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

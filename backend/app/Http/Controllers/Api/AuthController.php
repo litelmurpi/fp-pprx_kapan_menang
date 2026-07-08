@@ -18,10 +18,10 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'nim' => 'required|string|max:50|unique:mahasiswas',
-            'prodi' => 'required|string|max:255',
+            'nim' => 'nullable|string|max:50|unique:mahasiswas',
+            'prodi' => 'nullable|string|max:255',
             'minat_bidang' => 'nullable|string|max:255',
-            'jam_luang_per_minggu' => 'required|integer|min:0',
+            'jam_luang_per_minggu' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -40,10 +40,10 @@ class AuthController extends Controller
 
         $mahasiswa = Mahasiswa::create([
             'user_id' => $user->id,
-            'nim' => $request->nim,
-            'prodi' => $request->prodi,
-            'minat_bidang' => $request->minat_bidang,
-            'jam_luang_per_minggu' => $request->jam_luang_per_minggu,
+            'nim' => $request->nim ?? ('NIM-' . date('ymd') . '-' . rand(1000, 9999)),
+            'prodi' => $request->prodi ?? 'S1 Informatika',
+            'minat_bidang' => $request->minat_bidang ?? 'Umum',
+            'jam_luang_per_minggu' => $request->jam_luang_per_minggu ?? 15,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;

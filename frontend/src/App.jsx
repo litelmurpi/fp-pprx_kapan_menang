@@ -4,10 +4,10 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import SaaSLandingPage from './pages/SaaSLandingPage';
+import MatchmakingSection from './pages/MatchmakingSection';
 
 import Navbar from './components/Navbar';
-import SaaSLandingPage from './components/SaaSLandingPage';
-import MatchmakingSection from './components/MatchmakingSection';
 import WorkspaceSection from './components/WorkspaceSection';
 import PeerEvalSection from './components/PeerEvalSection';
 import UmkmSection from './components/UmkmSection';
@@ -140,8 +140,10 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<MainApp />} />
+          <Route path="/matchmaking" element={<MatchmakingSection />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<LoginPage initialMode="register" />} />
           <Route
             path="/*"
             element={
