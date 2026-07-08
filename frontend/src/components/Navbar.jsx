@@ -65,13 +65,13 @@ const Navbar = ({ activeTab, setActiveTab, currentUser, theme, setTheme, logout 
           
           {/* Left: Logo */}
           <div className="flex-1 flex justify-start">
-          <div 
-            onClick={() => setActiveTab('home')}
-            className="flex items-center gap-2.5 cursor-pointer group"
-          >
-            <span className="font-heading text-xl font-bold theme-text tracking-tight flex items-center gap-1.5">
-              Verstack
-            </span>
+            <div 
+              onClick={() => setActiveTab('home')}
+              className="flex items-center gap-2.5 cursor-pointer group theme-surface/80 backdrop-blur-md border theme-border px-3.5 py-1.5 rounded-xl shadow-sm hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+            >
+              <span className="font-heading text-xl font-bold theme-text tracking-tight flex items-center gap-1.5">
+                Verstack
+              </span>
             </div>
           </div>
 
@@ -98,97 +98,6 @@ const Navbar = ({ activeTab, setActiveTab, currentUser, theme, setTheme, logout 
 
           {/* Right side: Theme Switcher + User Profile / Logout */}
           <div className="flex-1 flex items-center justify-end gap-3">
-            
-            {/* User Info & Dropdown */}
-            {currentUser ? (
-              <div className="relative">
-                {profileDropdownOpen && (
-                  <div 
-                    className="fixed inset-0 z-40" 
-                    onClick={() => setProfileDropdownOpen(false)} 
-                  />
-                )}
-
-                <button 
-                  type="button"
-                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="h-[38px] backdrop-blur-md flex items-center gap-2 pl-2 pr-2.5 bg-black/5 dark:bg-white/5 border theme-border rounded-xl cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shadow-sm select-none"
-                >
-                  {currentUser.avatar ? (
-                    <img 
-                      src={currentUser.avatar} 
-                      alt={currentUser.name || 'Profile'} 
-                      className="w-5 h-5 rounded-full border theme-border shrink-0 object-cover"
-                    />
-                  ) : (
-                    <div className="w-5 h-5 rounded-full primary-bg flex items-center justify-center text-[#111111] font-bold text-[10px] shadow-sm shrink-0">
-                      {currentUser.name ? currentUser.name.charAt(0) : 'U'}
-                    </div>
-                  )}
-                  <div className="hidden sm:flex items-center gap-1.5">
-                    <span className="text-xs font-bold theme-text leading-none truncate max-w-[120px]">
-                      {currentUser.name || 'Profile'}
-                    </span>
-                    <ChevronDown className={`w-3.5 h-3.5 theme-text-muted transition-transform duration-200 shrink-0 ${profileDropdownOpen ? 'rotate-180' : ''}`} />
-                  </div>
-                </button>
-
-                {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-[0_12px_40px_rgba(0,0,0,0.3)] p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-3 py-2 border-b border-[var(--color-border)] mb-1 sm:hidden">
-                      <p className="text-xs font-bold theme-text truncate">{currentUser.name}</p>
-                      {currentUser.email && <p className="text-[10px] theme-text-muted truncate mt-0.5">{currentUser.email}</p>}
-                    </div>
-                    
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActiveTab('workspace');
-                        setProfileDropdownOpen(false);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium theme-text hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer text-left"
-                    >
-                      <Briefcase className="w-4 h-4 primary-text shrink-0" />
-                      <span>Workspace</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAvailabilityModalOpen(true);
-                        setProfileDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium theme-text hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer text-left mt-0.5"
-                    >
-                      <Calendar className="w-4 h-4 primary-text shrink-0" />
-                      <span>Availability</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (logout) logout();
-                        setProfileDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer text-left mt-0.5"
-                    >
-                      <LogOut className="w-4 h-4 shrink-0" />
-                      <span>Logout</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link 
-                to="/login"
-                className="h-[38px] btn-brand-primary px-5 rounded-xl text-xs font-semibold cursor-pointer shadow-sm flex items-center justify-center gap-1.5"
-              >
-                <span>Login</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            )}
-
             {/* Theme Switcher Button */}
             <button
               onClick={toggleTheme}
@@ -201,7 +110,7 @@ const Navbar = ({ activeTab, setActiveTab, currentUser, theme, setTheme, logout 
 
             {/* Authenticated User Info & Logout OR Login/Register */}
             {currentUser ? (
-              <div className="flex items-center gap-2.5 border theme-border theme-surface rounded-xl px-3 py-1.5 shadow-sm">
+              <div className="flex items-center gap-2.5 border theme-border theme-surface/80 backdrop-blur-md rounded-xl px-3 py-1.5 shadow-sm">
                 <img 
                   src={currentUser.avatar} 
                   alt={currentUser.name} 

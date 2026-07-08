@@ -16,11 +16,15 @@ import Footer from './components/Footer';
 import Lenis from '@studio-freight/lenis';
 import './index.css';
 
-function MainApp() {
-  const [activeTab, setActiveTab] = useState('home');
+function MainApp({ initialTab = 'home' }) {
+  const [activeTab, setActiveTab] = useState(initialTab);
   const { user, logout, refreshUser } = useAuth();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [joinedProjects, setJoinedProjects] = useState([102]); // Budi Santoso is in project 102 by default
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   const handleJoinProject = (projectId, joinData = {}) => {
     if (!joinedProjects.includes(projectId)) {
@@ -139,7 +143,7 @@ function MainApp() {
         )}
       </main>
 
-      <Footer activeTab={activeTab} setActiveTab={setActiveTab} />
+      {activeTab !== 'workspace' && <Footer activeTab={activeTab} setActiveTab={setActiveTab} />}
     </div>
   );
 }
@@ -150,7 +154,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainApp />} />
-          <Route path="/matchmaking" element={<MatchmakingSection />} />
+          <Route path="/matchmaking" element={<MainApp initialTab="matchmaking" />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<LoginPage initialMode="register" />} />
           <Route
