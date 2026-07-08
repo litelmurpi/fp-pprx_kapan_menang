@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { mockProjects, mockCheckpoints } from '../data/mockData';
 import ProjectDetailModal from '../components/ProjectDetailModal';
+import AuthAlertModal from '../components/AuthAlertModal';
 
 export const calculateMatchScore = (requiredSkills = [], userSkills = []) => {
   if (!requiredSkills.length) return 100;
@@ -23,6 +24,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [localJoinedProjects, setLocalJoinedProjects] = useState([102]);
   const [successMsg, setSuccessMsg] = useState('');
+  const [authAlert, setAuthAlert] = useState({ isOpen: false, message: '' });
   
   // Master-Detail JobStreet Layout States
   const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
@@ -74,6 +76,10 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
   };
 
   const handleJoinProject = (id, joinData = {}) => {
+    if (!currentUser) {
+      setAuthAlert({ isOpen: true, message: 'Silakan login terlebih dahulu untuk mengajukan diri ke tim ini.' });
+      return;
+    }
     if (!joinedProjects.includes(id)) {
       if (onJoinProject) {
         onJoinProject(id, joinData);
@@ -87,6 +93,10 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
   const handleSubmitInlineJoin = (e) => {
     e.preventDefault();
     if (!selectedProject) return;
+    if (!currentUser) {
+      setAuthAlert({ isOpen: true, message: 'Silakan login terlebih dahulu untuk mengajukan diri ke tim ini.' });
+      return;
+    }
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -95,6 +105,14 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
         handleJoinProject(selectedProject.id, { role: rolePreference, motivation: motivationNote });
       }, 1200);
     }, 800);
+  };
+
+  const handleOpenCreateModal = () => {
+    if (!currentUser) {
+      setAuthAlert({ isOpen: true, message: 'Silakan login terlebih dahulu untuk mempublikasikan proyek baru di Verstack.' });
+      return;
+    }
+    setShowCreateModal(true);
   };
 
   const handleCreateProject = (e) => {
@@ -133,7 +151,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
           </p>
         </div>
         <button 
-          onClick={() => setShowCreateModal(true)} 
+          onClick={handleOpenCreateModal} 
           className="btn-primary text-xs px-5 py-3 rounded-lg inline-flex items-center gap-2 cursor-pointer shadow-sm shrink-0"
         >
           <PlusCircle className="w-4 h-4" /> Buat Proyek Baru
@@ -572,10 +590,10 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
                               <label className="block text-[11px] font-semibold theme-text-muted uppercase tracking-wider mb-1.5 font-mono-tech">
                                 Ketersediaan Waktu Kamu
                               </label>
-                              <div className="w-full bg-white/5 border theme-border rounded-xl px-3.5 py-2.5 text-xs font-medium theme-text flex items-center justify-between">
-                                <span>{currentUser.freeHours || 12} Jam / minggu</span>
-                                <span className="text-[10px] badge-primary px-2 py-0.5 rounded font-mono-tech">Terverifikasi</span>
-                              </div>
+                                <div className="w-full bg-white/5 border theme-border rounded-xl px-3.5 py-2.5 text-xs font-medium theme-text flex items-center justify-between">
+                                  <span>{currentUser?.freeHours || 12} Jam / minggu</span>
+                                  <span className="text-[10px] badge-primary px-2 py-0.5 rounded font-mono-tech">Terverifikasi</span>
+                                </div>
                             </div>
                           </div>
 
@@ -692,6 +710,12 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
           setActiveTab={setActiveTab}
         />
       )}
+
+      <AuthAlertModal 
+        isOpen={authAlert.isOpen}
+        onClose={() => setAuthAlert({ isOpen: false, message: '' })}
+        message={authAlert.message}
+      />
     </div>
   );
 };

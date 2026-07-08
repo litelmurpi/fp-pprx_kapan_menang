@@ -5,6 +5,7 @@ import {
   ClipboardList, Users, Map
 } from 'lucide-react';
 import { mockCheckpoints } from '../data/mockData';
+import AuthAlertModal from './AuthAlertModal';
 
 const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, setActiveTab }) => {
   const [activeTab, setActiveTabLocal] = useState('overview'); // overview, members, roadmap
@@ -14,6 +15,7 @@ const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, s
   const [motivationNote, setMotivationNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
+  const [authAlert, setAuthAlert] = useState({ isOpen: false, message: '' });
 
   if (!project) return null;
 
@@ -35,6 +37,10 @@ const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, s
 
   const handleSubmitJoin = (e) => {
     e.preventDefault();
+    if (!currentUser) {
+      setAuthAlert({ isOpen: true, message: 'Silakan login terlebih dahulu untuk mengajukan diri ke proyek ini.' });
+      return;
+    }
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -349,7 +355,7 @@ const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, s
                           Ketersediaan Waktu Kamu
                         </label>
                         <div className="w-full bg-white/5 border theme-border rounded-xl px-3.5 py-2.5 text-xs font-medium theme-text flex items-center justify-between">
-                          <span>{currentUser.freeHours || 12} Jam / minggu</span>
+                          <span>{currentUser?.freeHours || 12} Jam / minggu</span>
                           <span className="text-[10px] badge-primary px-2 py-0.5 rounded font-mono-tech">Terverifikasi</span>
                         </div>
                       </div>
@@ -406,6 +412,12 @@ const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, s
 
         </div>
       </div>
+
+      <AuthAlertModal 
+        isOpen={authAlert.isOpen}
+        onClose={() => setAuthAlert({ isOpen: false, message: '' })}
+        message={authAlert.message}
+      />
     </div>
   );
 };
