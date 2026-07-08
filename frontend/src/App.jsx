@@ -11,13 +11,14 @@ import Navbar from './components/Navbar';
 import WorkspaceSection from './components/WorkspaceSection';
 import PeerEvalSection from './components/PeerEvalSection';
 import UmkmSection from './components/UmkmSection';
+import DashboardSection from './components/DashboardSection';
 import Footer from './components/Footer';
 import Lenis from '@studio-freight/lenis';
 import './index.css';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [joinedProjects, setJoinedProjects] = useState([102]); // Budi Santoso is in project 102 by default
 
@@ -100,7 +101,15 @@ function MainApp() {
 
       <main className="flex-1">
         {activeTab === 'home' && (
-          <SaaSLandingPage setActiveTab={setActiveTab} />
+          mappedUser ? (
+            <DashboardSection 
+              currentUser={mappedUser} 
+              setActiveTab={setActiveTab} 
+              refreshUser={refreshUser} 
+            />
+          ) : (
+            <SaaSLandingPage setActiveTab={setActiveTab} />
+          )
         )}
 
         {activeTab === 'matchmaking' && (

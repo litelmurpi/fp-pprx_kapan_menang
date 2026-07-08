@@ -82,7 +82,6 @@ export const AuthProvider = ({ children }) => {
       };
     }
   };
-
   const logout = async () => {
     setIsLoading(true);
     try {
@@ -98,6 +97,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    const storedToken = localStorage.getItem('access_token');
+    if (storedToken) {
+      try {
+        const response = await api.get('/me');
+        setUser(response.data.user);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      } catch (err) {
+        console.error("Failed to refresh user:", err);
+      }
+    }
+  };
+
   const clearError = () => setError(null);
 
   const value = {
@@ -109,7 +121,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    clearError
+    clearError,
+    refreshUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

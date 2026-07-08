@@ -8,6 +8,15 @@ import {
 import { mockProjects, mockCheckpoints } from '../data/mockData';
 import ProjectDetailModal from '../components/ProjectDetailModal';
 
+export const calculateMatchScore = (requiredSkills = [], userSkills = []) => {
+  if (!requiredSkills.length) return 100;
+  if (!userSkills.length) return 0;
+  const matchedSkills = requiredSkills.filter(s => 
+    userSkills.some(us => us.toLowerCase() === s.toLowerCase() || s.toLowerCase().includes(us.toLowerCase()))
+  );
+  return Math.round((matchedSkills.length / requiredSkills.length) * 100);
+};
+
 const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoined, onJoinProject }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');

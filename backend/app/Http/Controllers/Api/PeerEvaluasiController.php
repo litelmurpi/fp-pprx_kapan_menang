@@ -41,19 +41,22 @@ class PeerEvaluasiController extends Controller
         }
 
         $user = $request->user();
-        if ($user->role !== 'mahasiswa') {
-            return response()->json(['message' => 'Only student team members can submit peer evaluations'], 403);
+        $isProjectOwner = $user->id === $proyek->pembuat_id;
+
+        if ($user->role !== 'mahasiswa' && !$isProjectOwner) {
+            return response()->json(['message' => 'Only student team members or project owners can submit peer evaluations'], 403);
         }
 
-        $mahasiswa = Mahasiswa::where('user_id', $user->id)->firstOrFail();
-
-        // Get evaluator's member record
-        $pemberi = AnggotaTim::where('proyek_id', $proyekId)
-            ->where('mahasiswa_id', $mahasiswa->id)
-            ->first();
-
-        if (!$pemberi) {
-            return response()->json(['message' => 'You are not a member of this project team'], 403);
+        $pemberi = null;
+        if ($user->role === 'mahasiswa') {
+            $mahasiswa = Mahasiswa::where('user_id', $user->id)->firstOrFail();
+            $pemberi = AnggotaTim::where('proyek_id', $proyekId)
+                ->where('mahasiswa_id', $mahasiswa->id)
+                ->first();
+                
+            if (!$pemberi && !$isProjectOwner) {
+                return response()->json(['message' => 'You are not a member of this project team'], 403);
+            }
         }
 
         $validator = Validator::make($request->all(), [
@@ -75,7 +78,7 @@ class PeerEvaluasiController extends Controller
         $skorKontribusi = $request->skor_kontribusi ?? $request->skor;
 
         // Check if evaluating self
-        if ($pemberi->id == $penerimaId) {
+        if ($pemberi && $pemberi->id == $penerimaId) {
             return response()->json(['message' => 'You cannot evaluate yourself'], 400);
         }
 
@@ -93,7 +96,8 @@ class PeerEvaluasiController extends Controller
             $evaluasi = PeerEvaluasi::updateOrCreate(
                 [
                     'proyek_id' => $proyekId,
-                    'pemberi_id' => $pemberi->id,
+                    'pemberi_id' => $pemberi ? $pemberi->id : null,
+                    'user_pemberi_id' => !$pemberi ? $user->id : null,
                     'penerima_id' => $penerimaId,
                 ],
                 [

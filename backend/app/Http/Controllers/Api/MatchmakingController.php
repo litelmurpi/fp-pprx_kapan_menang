@@ -103,7 +103,8 @@ class MatchmakingController extends Controller
                     'onboarding_bonus' => $onboardingBonus,
                     'total_projects' => $mhs->anggotaTims->where('status', 'aktif')->count()
                 ],
-                'skor_akhir' => round($skorAkhir, 4)
+                'skor_akhir' => round($skorAkhir, 4),
+                'reputasi' => $mhs->reputasi
             ];
         }
 

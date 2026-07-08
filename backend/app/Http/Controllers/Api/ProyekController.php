@@ -18,7 +18,7 @@ class ProyekController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Proyek::with(['pembuat', 'kategoriProyek', 'kebutuhanSkills.skill', 'anggotaTims.mahasiswa.user']);
+        $query = Proyek::with(['pembuat', 'kategoriProyek', 'kebutuhanSkills.skill', 'anggotaTims.mahasiswa.user', 'anggotaTims.mahasiswa.profilSkills.skill']);
 
         if ($request->has('kategori_id')) {
             $query->where('kategori_proyek_id', $request->kategori_id);
@@ -50,6 +50,7 @@ class ProyekController extends Controller
             $pArray['dibuat_oleh_id'] = $p->pembuat_id;
 
             $members = [];
+            $pendingMembers = [];
             foreach ($p->anggotaTims as $at) {
                 if ($at->status === 'aktif') {
                     $members[] = [
@@ -64,9 +65,26 @@ class ProyekController extends Controller
                         'prodi' => $at->mahasiswa->prodi,
                         'peran' => $at->peran,
                     ];
+                } elseif ($at->status === 'mengajukan') {
+                    $pendingMembers[] = [
+                        'id' => $at->mahasiswa_id,
+                        'anggota_tim_id' => $at->id,
+                        'user_id' => $at->mahasiswa->user_id,
+                        'user' => [
+                            'name' => $at->mahasiswa->user->name,
+                            'email' => $at->mahasiswa->user->email,
+                        ],
+                        'nim' => $at->mahasiswa->nim,
+                        'prodi' => $at->mahasiswa->prodi,
+                        'peran' => $at->peran,
+                        'skills' => $at->mahasiswa->profilSkills->map(function ($ps) {
+                            return $ps->skill->nama;
+                        })->filter()->values()->toArray(),
+                    ];
                 }
             }
             $pArray['members'] = $members;
+            $pArray['pending_members'] = $pendingMembers;
 
             $skillsNeeded = [];
             foreach ($p->kebutuhanSkills as $ks) {
@@ -94,6 +112,7 @@ class ProyekController extends Controller
             'kategoriProyek', 
             'kebutuhanSkills.skill', 
             'anggotaTims.mahasiswa.user', 
+            'anggotaTims.mahasiswa.profilSkills.skill',
             'checkpoints.submisiCheckpoints.anggotaTim.mahasiswa.user',
             'approvalPics.pic'
         ])->find($id);
@@ -109,6 +128,7 @@ class ProyekController extends Controller
         $proyekArray['tenggat_waktu'] = $proyek->tanggal_selesai ? $proyek->tanggal_selesai->toDateString() : null;
 
         $members = [];
+        $pendingMembers = [];
         foreach ($proyek->anggotaTims as $at) {
             if ($at->status === 'aktif') {
                 $members[] = [
@@ -123,9 +143,26 @@ class ProyekController extends Controller
                     'prodi' => $at->mahasiswa->prodi,
                     'peran' => $at->peran,
                 ];
+            } elseif ($at->status === 'mengajukan') {
+                $pendingMembers[] = [
+                    'id' => $at->mahasiswa_id,
+                    'anggota_tim_id' => $at->id,
+                    'user_id' => $at->mahasiswa->user_id,
+                    'user' => [
+                        'name' => $at->mahasiswa->user->name,
+                        'email' => $at->mahasiswa->user->email,
+                    ],
+                    'nim' => $at->mahasiswa->nim,
+                    'prodi' => $at->mahasiswa->prodi,
+                    'peran' => $at->peran,
+                    'skills' => $at->mahasiswa->profilSkills->map(function ($ps) {
+                        return $ps->skill->nama;
+                    })->filter()->values()->toArray(),
+                ];
             }
         }
         $proyekArray['members'] = $members;
+        $proyekArray['pending_members'] = $pendingMembers;
 
         return response()->json([
             'data' => $proyekArray
