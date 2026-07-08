@@ -5,24 +5,24 @@ import {
   BookOpen, Send, CheckCircle2, Briefcase, UserCheck, Layers, Zap, Calendar, 
   Users, Maximize2, MessageSquare 
 } from 'lucide-react';
-import { PixelSparkle, PixelCheck, PixelStar, PixelRobot } from './PixelIcons';
 import { mockProjects, mockCheckpoints } from '../data/mockData';
-import ProjectDetailModal from './ProjectDetailModal';
-import AuthAlertModal from './AuthAlertModal';
-import api from '../api/axios';
-import { useNavigate } from 'react-router-dom';
+import ProjectDetailModal from '../components/ProjectDetailModal';
+
+export const calculateMatchScore = (requiredSkills = [], userSkills = []) => {
+  if (!requiredSkills.length) return 100;
+  if (!userSkills.length) return 0;
+  const matchedSkills = requiredSkills.filter(s => 
+    userSkills.some(us => us.toLowerCase() === s.toLowerCase() || s.toLowerCase().includes(us.toLowerCase()))
+  );
+  return Math.round((matchedSkills.length / requiredSkills.length) * 100);
+};
 
 const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoined, onJoinProject }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [authAlert, setAuthAlert] = useState({ isOpen: false, message: '' });
   const [localJoinedProjects, setLocalJoinedProjects] = useState([102]);
   const [successMsg, setSuccessMsg] = useState('');
-  
-  const [apiProjects, setApiProjects] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
   
   // Master-Detail JobStreet Layout States
   const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
@@ -44,49 +44,13 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
     requiredSkills: 'React, Node.js, Laravel', commitmentHours: 12
   });
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await api.get('/proyek');
-        const mapped = response.data.data.map(p => ({
-          id: p.id,
-          title: p.judul,
-          category: p.kategori,
-          description: p.deskripsi,
-          picName: p.pembuat ? p.pembuat.name : 'Unknown',
-          dibuat_oleh_id: p.dibuat_oleh_id,
-          requiredHours: 12, // default mock
-          duration: p.tenggat_waktu ? `Target: ${p.tenggat_waktu}` : '6 Minggu',
-          matchScore: 85, // mock or calculate later
-          status: p.status,
-          requiredSkills: p.skills_needed ? p.skills_needed.map(s => s.name) : ['Laravel', 'React'],
-          currentMembers: p.members ? p.members.map(m => ({
-            name: m.user?.name || 'Unknown',
-            role: m.peran,
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.user?.name || 'User'}`
-          })) : [],
-          slotsLeft: Math.max(0, (p.max_anggota || 4) - (p.members ? p.members.length : 0)),
-          checkpointsCount: 4,
-          progress: 0,
-          isUmkm: p.label_simulasi
-        }));
-        setApiProjects(mapped);
-      } catch (err) {
-        console.error("Failed to fetch projects:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProjects();
-  }, []);
+  const categories = ['All', 'Web Development', 'AI & Machine Learning', 'Mobile Development', 'UI/UX Design', 'Edutech / Kampus'];
 
-  const categories = ['All', 'Web Development', 'AI & Machine Learning', 'Mobile Development', 'UI/UX Design', 'Edutech / Kampus', 'UMKM / Komunitas', 'Lomba', 'Internal UKM'];
-
-  const filteredProjects = apiProjects.filter(p => {
-    const matchesSearch = (p.title || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          (p.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredProjects = mockProjects.filter(p => {
+    const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          p.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           (p.picName && p.picName.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCat = selectedCategory === 'All' || (p.category || '').toLowerCase().includes(selectedCategory.toLowerCase());
+    const matchesCat = selectedCategory === 'All' || p.category.toLowerCase().includes(selectedCategory.toLowerCase());
     return matchesSearch && matchesCat;
   });
 
@@ -109,35 +73,19 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
     }
   };
 
-  const handleJoinProject = async (id, joinData = {}) => {
-    if (!currentUser) {
-      setAuthAlert({ isOpen: true, message: 'Silakan login terlebih dahulu untuk mengajukan diri ke tim.' });
-      return;
-    }
-    
+  const handleJoinProject = (id, joinData = {}) => {
     if (!joinedProjects.includes(id)) {
-      try {
-        await api.post(`/proyek/${id}/join`, { peran: joinData.role || 'Developer' });
-        
-        if (onJoinProject) {
-          onJoinProject(id, joinData);
-        }
-        setLocalJoinedProjects(prev => [...prev, id]);
-        setSuccessMsg(`Berhasil mengajukan diri ke tim "${selectedProject?.title}" dengan peran ${joinData.role || 'Developer'}. Menunggu approval PIC!`);
-        setTimeout(() => { setSuccessMsg(''); setActiveTab('workspace'); }, 2000);
-      } catch (error) {
-        console.error("Failed to join project:", error);
-        alert(error.response?.data?.message || "Gagal mengajukan diri ke proyek.");
+      if (onJoinProject) {
+        onJoinProject(id, joinData);
       }
+      setLocalJoinedProjects(prev => [...prev, id]);
+      setSuccessMsg(`Berhasil mengajukan diri ke tim "${selectedProject?.title}" dengan peran ${joinData.role || 'Developer'}!`);
+      setTimeout(() => { setSuccessMsg(''); setActiveTab('workspace'); }, 1600);
     }
   };
 
   const handleSubmitInlineJoin = (e) => {
     e.preventDefault();
-    if (!currentUser) {
-      setAuthAlert({ isOpen: true, message: 'Silakan login terlebih dahulu untuk mengajukan diri ke tim.' });
-      return;
-    }
     if (!selectedProject) return;
     setIsSubmitting(true);
     setTimeout(() => {
@@ -151,10 +99,6 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
 
   const handleCreateProject = (e) => {
     e.preventDefault();
-    if (!currentUser) {
-      navigate('/login');
-      return;
-    }
     setShowCreateModal(false);
     setSuccessMsg('Proyek baru berhasil dipublikasikan ke jaringan Verstack!');
     setTimeout(() => setSuccessMsg(''), 2500);
@@ -165,19 +109,17 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
   const duration = selectedProject?.duration || '6 Minggu';
   const slotsLeft = selectedProject?.slotsLeft !== undefined ? selectedProject.slotsLeft : 2;
   const progress = selectedProject?.progress !== undefined ? selectedProject.progress : 15;
-  const selectedCurrentCount = selectedProject?.currentMembers ? selectedProject.currentMembers.length : 0;
   const requiredSkills = selectedProject?.requiredSkills || ['Laravel', 'React', 'Tailwind CSS'];
   const userSkills = currentUser?.skills || [];
   
   const matchedSkills = requiredSkills.filter(s => 
-    userSkills.some(us => (us || '').toLowerCase() === (s || '').toLowerCase() || (s || '').toLowerCase().includes((us || '').toLowerCase()))
+    userSkills.some(us => us.toLowerCase() === s.toLowerCase() || s.toLowerCase().includes(us.toLowerCase()))
   );
   const toLearnSkills = requiredSkills.filter(s => 
-    !userSkills.some(us => (us || '').toLowerCase() === (s || '').toLowerCase() || (s || '').toLowerCase().includes((us || '').toLowerCase()))
+    !userSkills.some(us => us.toLowerCase() === s.toLowerCase() || s.toLowerCase().includes(us.toLowerCase()))
   );
   const isHighMatch = (selectedProject?.matchScore || 85) >= 88;
   const isJoinedSelected = selectedProject ? joinedProjects.includes(selectedProject.id) : false;
-  const isProjectOwner = currentUser && selectedProject && currentUser.id === selectedProject.dibuat_oleh_id;
   const projectCheckpoints = mockCheckpoints.slice(0, selectedProject?.checkpointsCount || 4);
 
   return (
@@ -191,13 +133,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
           </p>
         </div>
         <button 
-          onClick={() => {
-            if (!currentUser) {
-              setAuthAlert({ isOpen: true, message: 'Silakan login terlebih dahulu untuk mempublikasikan proyek kolaborasi.' });
-            } else {
-              setShowCreateModal(true);
-            }
-          }} 
+          onClick={() => setShowCreateModal(true)} 
           className="btn-primary text-xs px-5 py-3 rounded-lg inline-flex items-center gap-2 cursor-pointer shadow-sm shrink-0"
         >
           <PlusCircle className="w-4 h-4" /> Buat Proyek Baru
@@ -261,7 +197,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
               const isJoined = joinedProjects.includes(project.id);
               const cardHighMatch = (project.matchScore || 85) >= 88;
               const isSelected = selectedProject?.id === project.id;
-              const currentCount = project.currentMembers ? project.currentMembers.length : 0;
+              const currentCount = project.currentMembers?.length || 2;
               const emptySlots = project.slotsLeft !== undefined ? project.slotsLeft : 2;
               const targetCount = currentCount + emptySlots;
 
@@ -362,12 +298,12 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
                     <span>PIC : <span className="theme-text bg-white/5 border theme-border px-2 py-1.5 rounded-lg">{selectedProject.picName || 'Sarah Fauziah'}</span></span>
                   </div>
 
-                  {isJoinedSelected || isProjectOwner ? (
+                  {isJoinedSelected ? (
                     <button 
                       onClick={() => setActiveTab('workspace')}
                       className="btn-primary text-xs px-5 py-2.5 rounded-xl font-bold inline-flex items-center gap-2 cursor-pointer shadow-md"
                     >
-                      <Check className="w-4 h-4" /> Kelola Workspace Tim
+                      <Check className="w-4 h-4" /> Buka Workspace Tim
                     </button>
                   ) : slotsLeft === 0 ? (
                     <span className="text-xs font-semibold px-4 py-2 rounded-lg bg-white/5 theme-text-muted border theme-border cursor-not-allowed">
@@ -376,12 +312,6 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
                   ) : (
                     <a 
                       href="#apply-section-inline"
-                      onClick={(e) => {
-                        if (!currentUser) {
-                          e.preventDefault();
-                          setAuthAlert({ isOpen: true, message: 'Daftar atau login sekarang untuk mengajukan permintaan gabung ke proyek ini.' });
-                        }
-                      }}
                       className="btn-primary text-xs px-5 py-2.5 rounded-xl font-bold inline-flex items-center gap-2 cursor-pointer shadow-lg hover:scale-102 transition-transform"
                     >
                       <span>Ajukan Permintaan Gabung</span>
@@ -405,7 +335,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
                   <p className="text-[10px] theme-text-muted uppercase font-mono-tech">Kuota Tim</p>
                   <p className="text-xs font-bold text-emerald-400 mt-0.5 flex items-center justify-center gap-1">
                     <Users className="w-3.5 h-3.5 text-[var(--color-primary)] shrink-0" />
-                    <span>{slotsLeft > 0 ? `${selectedCurrentCount}/${selectedCurrentCount + slotsLeft}` : `Penuh (${selectedCurrentCount}/${selectedCurrentCount})`}</span>
+                    <span>{slotsLeft > 0 ? `${selectedProject.currentMembers?.length || 2}/${(selectedProject.currentMembers?.length || 2) + slotsLeft}` : `Penuh (${(selectedProject.currentMembers?.length || 2)}/${(selectedProject.currentMembers?.length || 2)})`}</span>
                   </p>
                 </div>
                 <div className="p-2.5 rounded-xl bg-white/5 border theme-border">
@@ -418,7 +348,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
               <div className="flex items-center gap-2 px-6 sm:px-7 pt-3 border-b theme-border shrink-0 bg-white/[0.01]">
                 {[
                   { id: 'overview', label: '📋 Deskripsi & Skill Fit' },
-                  { id: 'members', label: `👥 Anggota Tim (${selectedCurrentCount})` },
+                  { id: 'members', label: `👥 Anggota Tim (${selectedProject.currentMembers?.length || 0})` },
                   { id: 'roadmap', label: `🗺️ Roadmap SPRINT (${selectedProject.checkpointsCount || 4})` },
                 ].map(tab => (
                   <button
@@ -450,72 +380,48 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
                     </div>
 
                     {/* Skill Match Breakdown */}
-                    {currentUser ? (
-                      <div>
-                        <h3 className="text-xs font-semibold theme-text-muted uppercase tracking-wider mb-3 font-mono-tech flex items-center justify-between">
-                          <span>Analisis Kesesuaian Keahlian (Skill Match)</span>
-                          <span className="primary-text lowercase font-normal">{matchedSkills.length} dari {requiredSkills.length} skill terpenuhi</span>
-                        </h3>
+                    <div>
+                      <h3 className="text-xs font-semibold theme-text-muted uppercase tracking-wider mb-3 font-mono-tech flex items-center justify-between">
+                        <span>Analisis Kesesuaian Keahlian (Skill Match)</span>
+                        <span className="primary-text lowercase font-normal">{matchedSkills.length} dari {requiredSkills.length} skill terpenuhi</span>
+                      </h3>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-                            <p className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 mb-2.5">
-                              <CheckCircle2 className="w-4 h-4" /> Skill Sesuai Profil Kamu
-                            </p>
-                            {matchedSkills.length > 0 ? (
-                              <div className="flex flex-wrap gap-1.5">
-                                {matchedSkills.map((sk, idx) => (
-                                  <span key={idx} className="text-xs font-medium px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                                    ✓ {sk}
-                                  </span>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="text-xs theme-text-sub italic">Belum ada skill yang cocok secara langsung.</p>
-                            )}
-                          </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+                          <p className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 mb-2.5">
+                            <CheckCircle2 className="w-4 h-4" /> Skill Sesuai Profil Kamu
+                          </p>
+                          {matchedSkills.length > 0 ? (
+                            <div className="flex flex-wrap gap-1.5">
+                              {matchedSkills.map((sk, idx) => (
+                                <span key={idx} className="text-xs font-medium px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                  ✓ {sk}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-xs theme-text-sub italic">Belum ada skill yang cocok secara langsung.</p>
+                          )}
+                        </div>
 
-                          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
-                            <p className="text-xs font-semibold text-amber-400 flex items-center gap-1.5 mb-2.5">
-                              <Zap className="w-4 h-4" /> Peluang Upskilling &amp; Belajar
-                            </p>
-                            {toLearnSkills.length > 0 ? (
-                              <div className="flex flex-wrap gap-1.5">
-                                {toLearnSkills.map((sk, idx) => (
-                                  <span key={idx} className="text-xs font-medium px-2.5 py-1 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                                    + {sk}
-                                  </span>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="text-xs text-emerald-400 font-medium">✨ Luar biasa! Kamu menguasai semua keahlian yang dibutuhkan!</p>
-                            )}
-                          </div>
+                        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                          <p className="text-xs font-semibold text-amber-400 flex items-center gap-1.5 mb-2.5">
+                            <Zap className="w-4 h-4" /> Peluang Upskilling &amp; Belajar
+                          </p>
+                          {toLearnSkills.length > 0 ? (
+                            <div className="flex flex-wrap gap-1.5">
+                              {toLearnSkills.map((sk, idx) => (
+                                <span key={idx} className="text-xs font-medium px-2.5 py-1 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                                  + {sk}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-emerald-400 font-medium">✨ Luar biasa! Kamu menguasai semua keahlian yang dibutuhkan!</p>
+                          )}
                         </div>
                       </div>
-                    ) : (
-                      <div>
-                        <h3 className="text-xs font-semibold theme-text-muted uppercase tracking-wider mb-3 font-mono-tech flex items-center justify-between">
-                          <span>Keahlian yang Dibutuhkan (Required Skills)</span>
-                        </h3>
-                        <div className="p-4 rounded-xl bg-white/5 border theme-border mb-3">
-                          <div className="flex flex-wrap gap-1.5">
-                            {requiredSkills.map((sk, idx) => (
-                              <span key={idx} className="text-xs font-medium px-2.5 py-1 rounded-md bg-white/10 theme-text-sub border theme-border">
-                                {sk}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="p-3.5 rounded-xl bg-[var(--color-primary)]/5 border border-[var(--color-primary)]/20 flex items-start gap-3">
-                          <UserCheck className="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" />
-                          <div>
-                            <p className="text-xs font-bold theme-text">Ingin tahu seberapa cocok profilmu dengan proyek ini?</p>
-                            <p className="text-[11px] theme-text-sub mt-0.5">Login sekarang untuk mengaktifkan fitur analisis kesesuaian skill otomatis berdasarkan pengalamanmu.</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    </div>
 
                     <div className="p-4 rounded-xl bg-white/5 border theme-border flex items-start gap-3">
                       <AlertCircle className="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" />
@@ -596,20 +502,8 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
 
                 {/* Inline JobStreet Quick-Apply Section at the Bottom */}
                 <div id="apply-section-inline" className="pt-6 border-t theme-border">
-                  {isProjectOwner ? (
-                    <div className="bg-white/[0.03] border-2 theme-border rounded-2xl p-8 relative overflow-hidden text-center flex flex-col items-center shadow-lg mt-4">
-                      <div className="w-16 h-16 rounded-full bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/30 flex items-center justify-center mb-4">
-                        <Briefcase className="w-8 h-8 text-[var(--color-primary)]" />
-                      </div>
-                      <h4 className="text-base sm:text-lg font-bold theme-text mb-2">Ini adalah Proyek Kamu</h4>
-                      <p className="text-xs theme-text-sub mb-6 max-w-md leading-relaxed">Kamu adalah pembuat dan PIC dari proyek ini. Kelola tim, tinjau pendaftar, dan pantau progres mingguan melalui Workspace.</p>
-                      <button onClick={() => setActiveTab('workspace')} className="btn-primary text-xs px-7 py-3.5 rounded-xl font-bold inline-flex items-center gap-2 cursor-pointer shadow-lg hover:scale-105 transition-transform">
-                        <span>Kelola Tim di Workspace</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : isJoinedSelected ? (
-                    <div className="bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/30 p-5 rounded-2xl flex items-center justify-between">
+                  {isJoinedSelected ? (
+                    <div className="bg-[var(--color-primary)]/15 border border-[var(--color-primary)]/40 p-5 rounded-2xl flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl badge-primary">
                           <Check className="w-6 h-6" />
@@ -637,16 +531,13 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
                         </div>
                       </div>
                     </div>
-                  ) : currentUser ? (
+                  ) : (
                     <div className="bg-white/[0.03] border-2 theme-border rounded-2xl p-6 relative overflow-hidden">
                       <div className="flex items-center justify-between mb-4">
                         <h4 className="text-sm font-bold theme-text flex items-center gap-2">
                           <Briefcase className="w-4 h-4 primary-text" />
                           <span>Pengajuan Permintaan Gabung Tim (Quick Apply)</span>
                         </h4>
-                        <span className="text-[10px] font-mono-tech badge-primary px-2 py-0.5 rounded">
-                          ⚡ Verstack Instant Review
-                        </span>
                       </div>
 
                       {submittedSuccess ? (
@@ -682,7 +573,7 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
                                 Ketersediaan Waktu Kamu
                               </label>
                               <div className="w-full bg-white/5 border theme-border rounded-xl px-3.5 py-2.5 text-xs font-medium theme-text flex items-center justify-between">
-                                <span>{currentUser?.freeHours || 12} Jam / minggu</span>
+                                <span>{currentUser.freeHours || 12} Jam / minggu</span>
                                 <span className="text-[10px] badge-primary px-2 py-0.5 rounded font-mono-tech">Terverifikasi</span>
                               </div>
                             </div>
@@ -726,18 +617,6 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
                           </div>
                         </form>
                       )}
-                    </div>
-                  ) : (
-                    <div className="bg-white/[0.03] border-2 theme-border rounded-2xl p-8 relative overflow-hidden text-center flex flex-col items-center shadow-lg mt-4">
-                      <div className="w-16 h-16 rounded-full bg-white/5 border theme-border flex items-center justify-center mb-4">
-                        <Briefcase className="w-8 h-8 text-[var(--color-primary)]" />
-                      </div>
-                      <h4 className="text-base sm:text-lg font-bold theme-text mb-2">Tertarik Gabung dengan Tim Ini?</h4>
-                      <p className="text-xs theme-text-sub mb-6 max-w-md leading-relaxed">Buat akun sekarang untuk dapat mengajukan diri ke proyek riil. Dapatkan portofolio yang tervalidasi di atas jaringan Verstack dan perluas relasi teknologimu.</p>
-                      <button onClick={() => navigate('/login')} className="btn-primary text-xs px-7 py-3.5 rounded-xl font-bold inline-flex items-center gap-2 cursor-pointer shadow-lg hover:scale-105 transition-transform">
-                        <span>Log in / Daftar Sekarang</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
                     </div>
                   )}
                 </div>
@@ -813,13 +692,6 @@ const MatchmakingSection = ({ currentUser, setActiveTab, joinedProjects: propJoi
           setActiveTab={setActiveTab}
         />
       )}
-
-      {/* Auth Alert Modal */}
-      <AuthAlertModal 
-        isOpen={authAlert.isOpen} 
-        message={authAlert.message} 
-        onClose={() => setAuthAlert({ isOpen: false, message: '' })} 
-      />
     </div>
   );
 };

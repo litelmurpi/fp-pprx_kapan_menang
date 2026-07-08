@@ -18,7 +18,7 @@ class ProyekController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Proyek::with(['pembuat', 'kategoriProyek', 'kebutuhanSkills.skill', 'anggotaTims.mahasiswa.user']);
+        $query = Proyek::with(['pembuat', 'kategoriProyek', 'kebutuhanSkills.skill', 'anggotaTims.mahasiswa.user', 'anggotaTims.mahasiswa.profilSkills.skill']);
 
         if ($request->has('kategori_id')) {
             $query->where('kategori_proyek_id', $request->kategori_id);
@@ -77,6 +77,9 @@ class ProyekController extends Controller
                         'nim' => $at->mahasiswa->nim,
                         'prodi' => $at->mahasiswa->prodi,
                         'peran' => $at->peran,
+                        'skills' => $at->mahasiswa->profilSkills->map(function ($ps) {
+                            return $ps->skill->nama;
+                        })->filter()->values()->toArray(),
                     ];
                 }
             }
@@ -109,6 +112,7 @@ class ProyekController extends Controller
             'kategoriProyek', 
             'kebutuhanSkills.skill', 
             'anggotaTims.mahasiswa.user', 
+            'anggotaTims.mahasiswa.profilSkills.skill',
             'checkpoints.submisiCheckpoints.anggotaTim.mahasiswa.user',
             'approvalPics.pic'
         ])->find($id);
@@ -151,6 +155,9 @@ class ProyekController extends Controller
                     'nim' => $at->mahasiswa->nim,
                     'prodi' => $at->mahasiswa->prodi,
                     'peran' => $at->peran,
+                    'skills' => $at->mahasiswa->profilSkills->map(function ($ps) {
+                        return $ps->skill->nama;
+                    })->filter()->values()->toArray(),
                 ];
             }
         }

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
   X, Clock, Check, Sparkles, Globe, AlertCircle, ShieldCheck, 
-  Send, CheckCircle2, Briefcase, UserCheck, Zap, Maximize2, MessageSquare 
+  Send, CheckCircle2, Briefcase, UserCheck, Zap, Maximize2, MessageSquare,
+  ClipboardList, Users, Map
 } from 'lucide-react';
 import { mockCheckpoints } from '../data/mockData';
 
@@ -29,7 +30,7 @@ const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, s
   const toLearnSkills = requiredSkills.filter(s => 
     !userSkills.some(us => us.toLowerCase() === s.toLowerCase() || s.toLowerCase().includes(us.toLowerCase()))
   );
-  const isHighMatch = (project.matchScore || 85) >= 88;
+  const isHighMatch = (project.matchScore || 0) >= 80;
   const projectCheckpoints = mockCheckpoints.slice(0, project.checkpointsCount || 4);
 
   const handleSubmitJoin = (e) => {
@@ -71,7 +72,7 @@ const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, s
               isHighMatch ? 'badge-primary' : 'bg-amber-500/15 text-amber-500 border-amber-500/30'
             }`}>
               <Sparkles className="w-3.5 h-3.5" />
-              {project.matchScore || 85}% FIT PROFILE
+              {project.matchScore || 0}% FIT PROFILE
             </span>
             {project.isUmkm && (
               <span className="text-[11px] font-semibold badge-info px-3 py-1 rounded-md inline-flex items-center gap-1">
@@ -115,9 +116,9 @@ const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, s
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 px-6 sm:px-7 pt-3 border-b theme-border shrink-0 bg-white/[0.01]">
           {[
-            { id: 'overview', label: '📋 Deskripsi & Skill Fit' },
-            { id: 'members', label: `👥 Anggota Tim (${project.currentMembers?.length || 0})` },
-            { id: 'roadmap', label: `🗺️ Roadmap SPRINT (${project.checkpointsCount || 4})` },
+            { id: 'overview', label: <div className="flex items-center gap-1.5 justify-center"><ClipboardList className="w-4 h-4" /><span>Deskripsi & Skill Fit</span></div> },
+            { id: 'members', label: <div className="flex items-center gap-1.5 justify-center"><Users className="w-4 h-4" /><span>Anggota Tim ({project.currentMembers?.length || 0})</span></div> },
+            { id: 'roadmap', label: <div className="flex items-center gap-1.5 justify-center"><Map className="w-4 h-4" /><span>Roadmap SPRINT ({project.checkpointsCount || 4})</span></div> },
           ].map(tab => (
             <button
               key={tab.id}
@@ -185,7 +186,7 @@ const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, s
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-emerald-400 font-medium">✨ Luar biasa! Kamu menguasai semua keahlian yang dibutuhkan!</p>
+                      <p className="text-xs text-emerald-400 font-medium flex items-center gap-1.5"><Sparkles className="w-4 h-4" /> Luar biasa! Kamu menguasai semua keahlian yang dibutuhkan!</p>
                     )}
                   </div>
                 </div>
@@ -309,7 +310,9 @@ const ProjectDetailModal = ({ project, onClose, onJoin, currentUser, isJoined, s
                     <span>Pengajuan Permintaan Gabung Tim (Quick Apply)</span>
                   </h4>
                   <span className="text-[10px] font-mono-tech badge-primary px-2 py-0.5 rounded">
-                    ⚡ Verstack Instant Review
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-3 h-3" /> Verstack Instant Review
+                    </span>
                   </span>
                 </div>
 

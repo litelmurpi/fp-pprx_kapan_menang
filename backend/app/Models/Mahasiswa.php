@@ -13,6 +13,19 @@ class Mahasiswa extends Model
 {
     use HasFactory;
 
+    protected $appends = ['reputasi'];
+
+    public function getReputasiAttribute()
+    {
+        $anggotaTimIds = $this->anggotaTims()->pluck('id');
+        if ($anggotaTimIds->isEmpty()) {
+            return 0;
+        }
+        
+        $average = \App\Models\PeerEvaluasi::whereIn('penerima_id', $anggotaTimIds)->avg('skor_kontribusi');
+        return $average ? round($average, 1) : 0;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

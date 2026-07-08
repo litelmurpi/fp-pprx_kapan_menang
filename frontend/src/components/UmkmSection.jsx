@@ -5,6 +5,7 @@ import api from '../api/axios';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthAlertModal from './AuthAlertModal';
+import { calculateMatchScore } from '../pages/MatchmakingSection';
 
 const UmkmSection = ({ currentUser, setActiveTab }) => {
   const navigate = useNavigate();
@@ -47,7 +48,6 @@ const UmkmSection = ({ currentUser, setActiveTab }) => {
             id: p.id,
             title: p.judul,
             description: p.deskripsi,
-            matchScore: 88,
             requiredSkills: p.skills_needed ? p.skills_needed.map(s => s.name) : [],
             commitmentHours: 15
           }));
@@ -120,7 +120,7 @@ const UmkmSection = ({ currentUser, setActiveTab }) => {
                   <Store className="w-3 h-3" /> Mitra UMKM
                 </span>
                 <span className="text-[11px] font-mono-tech font-bold px-2.5 py-1 rounded-full badge-primary">
-                  {project.matchScore}% FIT
+                  {calculateMatchScore(project.requiredSkills, currentUser?.skills || [])}% FIT
                 </span>
               </div>
 

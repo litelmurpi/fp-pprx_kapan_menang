@@ -4,10 +4,10 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import SaaSLandingPage from './pages/SaaSLandingPage';
+import MatchmakingSection from './pages/MatchmakingSection';
 
 import Navbar from './components/Navbar';
-import SaaSLandingPage from './components/SaaSLandingPage';
-import MatchmakingSection from './components/MatchmakingSection';
 import WorkspaceSection from './components/WorkspaceSection';
 import PeerEvalSection from './components/PeerEvalSection';
 import UmkmSection from './components/UmkmSection';
@@ -18,7 +18,7 @@ import './index.css';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [joinedProjects, setJoinedProjects] = useState([102]); // Budi Santoso is in project 102 by default
 
@@ -102,7 +102,11 @@ function MainApp() {
       <main className="flex-1">
         {activeTab === 'home' && (
           mappedUser ? (
-            <DashboardSection currentUser={mappedUser} setActiveTab={setActiveTab} />
+            <DashboardSection 
+              currentUser={mappedUser} 
+              setActiveTab={setActiveTab} 
+              refreshUser={refreshUser} 
+            />
           ) : (
             <SaaSLandingPage setActiveTab={setActiveTab} />
           )
@@ -146,8 +150,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainApp />} />
+          <Route path="/matchmaking" element={<MatchmakingSection />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<LoginPage initialMode="register" />} />
           <Route
             path="/*"
             element={

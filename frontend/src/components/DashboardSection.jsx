@@ -2,15 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { 
   Briefcase, Clock, Users, ArrowRight, CheckCircle2, 
   XCircle, UserCheck, Sparkles, TrendingUp, PlusCircle, 
-  Check, X, AlertCircle, ArrowUpRight, Compass, Shield
+  Check, X, AlertCircle, ArrowUpRight, Compass, Shield, Settings
 } from 'lucide-react';
 import api from '../api/axios';
+import ProfileEditModal from './ProfileEditModal';
+import { calculateMatchScore } from '../pages/MatchmakingSection';
+import StarRating from './StarRating';
 
-const DashboardSection = ({ currentUser, setActiveTab }) => {
+const DashboardSection = ({ currentUser, setActiveTab, refreshUser }) => {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
   const fetchDashboardData = async () => {
     try {
@@ -73,14 +77,16 @@ const DashboardSection = ({ currentUser, setActiveTab }) => {
     p.pendingMembers.map(pm => ({
       ...pm,
       projectTitle: p.title,
-      projectId: p.id
+      projectId: p.id,
+      requiredSkills: p.requiredSkills
     }))
   );
 
   // Statistics calculations
   const totalActiveProjects = myCreatedProjects.length + myJoinedProjects.length;
   const committedHours = currentUser.freeHours || 12;
-  const matchScorePercent = 88; // Default mock match rating based on completed portfolio items
+  const allMatchScores = projects.map(p => calculateMatchScore(p.requiredSkills, currentUser?.skills || []));
+  const matchScorePercent = allMatchScores.length > 0 ? Math.max(...allMatchScores) : 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-16 space-y-8 animate-in fade-in duration-200">
@@ -124,6 +130,14 @@ const DashboardSection = ({ currentUser, setActiveTab }) => {
         </div>
 
         <div className="flex flex-wrap gap-2.5 z-10">
+          {currentUser.role.startsWith('Mahasiswa') && (
+            <button 
+              onClick={() => setIsEditProfileOpen(true)}
+              className="btn-secondary text-xs px-5 py-3 rounded-xl font-bold flex items-center gap-2 cursor-pointer border theme-border hover:bg-white/5 transition-transform"
+            >
+              <Settings className="w-4 h-4 text-[var(--color-primary)]" /> Edit Profil &amp; Skill
+            </button>
+          )}
           <button 
             onClick={() => setActiveTab('matchmaking')}
             className="btn-primary text-xs px-5 py-3 rounded-xl font-bold flex items-center gap-2 cursor-pointer shadow-lg hover:scale-102 transition-transform"
@@ -169,7 +183,9 @@ const DashboardSection = ({ currentUser, setActiveTab }) => {
         <div className="theme-card p-5 rounded-2xl flex items-center justify-between hover:bg-white/[0.03] transition-colors">
           <div className="space-y-1">
             <p className="text-[10px] theme-text-muted uppercase tracking-wider font-mono-tech">Reputasi / Eval</p>
-            <p className="text-2xl font-bold text-sky-400">9.2<span className="text-xs font-normal text-zinc-500">/10</span></p>
+            <div className="pt-1">
+              <StarRating rating={currentUser.reputasi || 0} maxRating={5} size={5} />
+            </div>
           </div>
           <div className="p-3 rounded-xl bg-white/5 border theme-border">
             <TrendingUp className="w-5 h-5 text-sky-400" />
@@ -325,11 +341,22 @@ const DashboardSection = ({ currentUser, setActiveTab }) => {
               </div>
             ) : (
               <div className="space-y-4 max-h-[420px] overflow-y-auto pr-1">
-                {allPendingRequests.map((req, idx) => (
-                  <div key={idx} className="p-4 rounded-xl bg-white/5 border theme-border space-y-3 hover:bg-white/[0.08] transition-all">
-                    <div>
-                      <p className="text-[10px] theme-text-muted font-bold font-mono-tech truncate uppercase tracking-wider mb-1">
-                        👉 {req.projectTitle}
+                {allPendingRequests.map((req, idx) => {
+                  const applicantScore = calculateMatchScore(req.requiredSkills || [], req.skills || []);
+                  const isHighMatch = applicantScore >= 80;
+                  return (
+                  <div key={idx} className="p-4 rounded-xl bg-white/5 border theme-border space-y-3 hover:bg-white/[0.08] transition-all relative">
+                    <div className="absolute top-4 right-4">
+                      <span className={`text-[10px] font-mono-tech font-bold px-2 py-1 rounded-md border inline-flex items-center gap-1 ${
+                        isHighMatch ? 'badge-primary' : 'bg-amber-500/15 text-amber-500 border-amber-500/30'
+                      }`}>
+                        {isHighMatch && <Sparkles className="w-3 h-3" />}
+                        {applicantScore}% FIT
+                      </span>
+                    </div>
+                    <div className="pr-16">
+                      <p className="text-[10px] theme-text-muted font-bold font-mono-tech truncate uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <ArrowRight className="w-3 h-3 inline" /> {req.projectTitle}
                       </p>
                       <h4 className="text-sm font-bold theme-text">{req.user?.name}</h4>
                       <p className="text-[10px] theme-text-sub font-mono-tech mt-0.5">
@@ -357,7 +384,8 @@ const DashboardSection = ({ currentUser, setActiveTab }) => {
                       </button>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -366,6 +394,12 @@ const DashboardSection = ({ currentUser, setActiveTab }) => {
 
       </div>
 
+      <ProfileEditModal 
+        isOpen={isEditProfileOpen} 
+        onClose={() => setIsEditProfileOpen(false)} 
+        currentUser={currentUser}
+        refreshUser={refreshUser}
+      />
     </div>
   );
 };
